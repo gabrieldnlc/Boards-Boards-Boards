@@ -23,41 +23,89 @@ SCENARIO("A serialized PostContainer is correctly deserialized into a PostContai
 
         WHEN("Parse is called on a valid script")
         {
-            const string sample_board = R"({
-          {
-            tags = {
-              next = {
-                2
-              },
-              falsehood = true,
-              truth = {false},
-              maybe ={false, true},
-              random = {5, 7, 8, 50.5}
-            },
-            content = {"Nothing at all.", "Testing content."},
-            display_pos = {50, 50},
-          },
-          {
-            tags = {},
-            content = {"Getting your bearings.",}
-          },
-          {
-            tags = {
-              sometext = "Random text.",
-              on_top = true,
-          },
-            content = "Playing around with testing."
-          },
-          {
-            content = {"Getting your bearings.",}
-          },
-        })";
+            const string sample_board = R"({posts = 
+{
+  {
+    color = {
+      150,
+      150,
+      150
+    },
+    content = {
+      "Nothing at all.",
+      "Testing content."
+    },
+    display_pos = {
+      50,
+      50
+    },
+    tags = {
+      falsehood = {
+        true
+      },
+      maybe = {
+        false,
+        true
+      },
+      next = {
+        2
+      },
+      random = {
+        5,
+        7,
+        8,
+        50.5
+      },
+      truth = {
+        false
+      }
+    }
+  },
+  {
+    content = {
+      "Getting your bearings."
+    },
+    display_pos = {
+      150,
+      150
+    }
+  },
+  {
+    content = {
+      "Playing around with testing."
+    },
+    display_pos = {
+      311,
+      295
+    },
+    tags = {
+      on_top = {
+        true
+      },
+      sometext = {
+        "Random text."
+      }
+    }
+  },
+  {
+    content = {
+      "Getting your bearings."
+    },
+    display_pos = {
+      250,
+      250
+    }
+  }
+},
+board_config = {bg_color = {30, 30, 30}}
+})";
 
             sol::table deserialized = LuaStack::DeserializeTableString(sample_board);
 
             PostContainer posts;
+            PostContainer another = parser.Parse(deserialized);
 
-            REQUIRE_NOTHROW(posts = std::move(parser.Parse(deserialized)));
+            REQUIRE_NOTHROW(posts = (parser.Parse(deserialized)));
 
             THEN("Parse is executed to the specifications")
             {
@@ -115,37 +163,42 @@ SCENARIO("Attempting to deserialize an invalid script will throw", tag)
 
         WHEN("Parse is called on a malformed script")
         {
-            const string malformed_1 = R"({
-             {
-                 tags = {},
-                 content__ = {"Getting your bearings.",}
-             },
-                })";
+            const string no_posts = R"({
+  posts__ = {
+    {
+      content = {
+        "Getting your bearings."
+      },
+      display_pos = {
+        150,
+        150
+      }
+    }
+  }
+})";
 
-            const string malformed_2 = R"({
-             {
-                 tags = {},
-                 content = {5}
-             },
-                })";
+            const string not_valid = R"({{}})";
 
-            const string malformed_3 = R"({
-             {
-                 tags = {},
-                 content = {true}
-             },
-                })";
+            const string post_not_valid = R"({
+  posts = {
+    {
+      content___ = {
+        "Getting your bearings."
+      },
+      display_pos = {
+        150,
+        150
+      }
+    }
+  }
+})";
 
-            const string empty_board = R"({{})";
-            
             THEN("exceptions are thrown")
             {
-                REQUIRE_THROWS_WITH(parser.Parse(LuaStack::DeserializeTableString(empty_board)), "Not a valid script file.");
-                REQUIRE_THROWS_WITH(parser.Parse(LuaStack::DeserializeTableString(malformed_1)), "Post has no valid 'content' field.");
-                REQUIRE_THROWS_WITH(parser.Parse(LuaStack::DeserializeTableString(malformed_2)), "Post has no valid 'content' field.");
-                REQUIRE_THROWS_WITH(parser.Parse(LuaStack::DeserializeTableString(malformed_3)), "Post has no valid 'content' field.");
+                REQUIRE_THROWS_WITH(parser.Parse(LuaStack::DeserializeTableString(no_posts)), "The file does not have a Posts table.");
+                REQUIRE_THROWS_WITH(parser.Parse(LuaStack::DeserializeTableString(not_valid)), "The file does not have a Posts table.");
+                REQUIRE_THROWS_WITH(parser.Parse(LuaStack::DeserializeTableString(post_not_valid)), "Post has no valid 'content' field.");
             }
-
         }
     }
 }
@@ -159,7 +212,7 @@ SCENARIO("A deserialized PostContainer is equal to the original", tag)
         BoardParser parser;
 
         const string sample_board = R"({
-          {
+          posts = {
             tags = {
               next = {
                 2

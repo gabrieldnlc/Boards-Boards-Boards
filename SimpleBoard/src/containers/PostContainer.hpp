@@ -7,12 +7,12 @@
 #include "renderables/posts/Post.hpp"
 #include "utils/ColorTable.hpp"
 
+using std::string;
+using std::unordered_map;
+using utils::ColorTable;
+
 namespace sb
 {
-	using std::string;
-	using std::unordered_map;
-	using utils::ColorTable;
-
 	class PostContainer
 	{
 	public:
@@ -63,8 +63,23 @@ namespace sb
 
 		}board_options;
 
+		struct PostConnection
+		{
+			PostConnection(std::size_t from = 0, std::size_t to = 0) : from(from), to(to) {}
+			std::size_t from;
+			std::size_t to;
+
+			bool operator==(const PostConnection& another_connection) const
+			{
+				return (from == another_connection.from) && (to == another_connection.to);
+			}
+		};
+
+		LuaVector<PostConnection> connections = LuaVector<PostConnection>(false);
+
 	private:
 		LuaVector<Post> posts = LuaVector<Post>(false);
+
 		void PropagateIndexShift(iterator start, int offset, std::size_t removed_node_idx = 0);
 		void PropagateIndexShift(iterator start, iterator end, int offset, std::size_t removed_node_idx = 0);
 		void ReconnectNodes(std::unordered_map<std::size_t, std::size_t>& index_changes);

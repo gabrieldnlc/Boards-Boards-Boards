@@ -58,7 +58,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WIN32;BOARD_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>IMGUI_DEFINE_MATH_OPERATORS;WIN32;BOARD_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;extern\Lua\include;extern\sol;extern\SDL2\include;extern\nativefiledialog\include;extern\imgui;extern\imgui\backends;extern\imgui\misc\cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -80,7 +80,7 @@ xcopy /Q /E /Y /I scripts ..\bin\Debug-windows-x86\$(ProjectName)\scripts</Comma
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WIN32;BOARD_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>IMGUI_DEFINE_MATH_OPERATORS;WIN32;BOARD_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;extern\Lua\include;extern\sol;extern\SDL2\include;extern\nativefiledialog\include;extern\imgui;extern\imgui\backends;extern\imgui\misc\cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -112,17 +112,18 @@ xcopy /Q /E /Y /I scripts ..\bin\Release-windows-x86\$(ProjectName)\scripts</Com
     <ClInclude Include="src\renderables\WidgetManager.hpp" />
     <ClInclude Include="src\renderables\posts\Post.hpp" />
     <ClInclude Include="src\renderables\posts\PostContent.hpp" />
-    <ClInclude Include="src\utils\LuaValue.hpp" />
     <ClInclude Include="src\renderables\posts\Tags.hpp" />
     <ClInclude Include="src\renderables\tabs\BoardTab.hpp" />
     <ClInclude Include="src\renderables\tabs\TabBar.hpp" />
     <ClInclude Include="src\renderables\windows\ErrorPrompt.hpp" />
     <ClInclude Include="src\renderables\windows\Prompt.hpp" />
+    <ClInclude Include="src\utils\Bezier.hpp" />
     <ClInclude Include="src\utils\ColorTable.hpp" />
     <ClInclude Include="src\utils\Error.hpp" />
     <ClInclude Include="src\utils\FileDialog.hpp" />
     <ClInclude Include="src\utils\FilePath.hpp" />
     <ClInclude Include="src\utils\LuaStack.hpp" />
+    <ClInclude Include="src\utils\LuaValue.hpp" />
     <ClInclude Include="src\utils\OperationsQueue.hpp" />
     <ClInclude Include="src\utils\parsing\BoardParser.hpp" />
     <ClInclude Include="src\utils\parsing\ParsingHelpers.hpp" />

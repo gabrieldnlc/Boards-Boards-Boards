@@ -30,6 +30,7 @@ namespace sb
 
         struct CurrentFrameInfo
         {
+            bool mouse_valid = false;
             bool mouse_clicked = false;
             bool mouse_leftclicked = false;
             bool mouse_doubleclicked = false;
@@ -39,35 +40,44 @@ namespace sb
             bool mouse_rightclicked = false;
             bool just_selected_post = false;
             bool just_released_post = false;
-            std::size_t selection = 0;
+
+            std::size_t selected_post = 0;
+            std::size_t hovered_connection = 0;
+
             ImVec2 mouse_pos = ImVec2();
 
             void Reset()
             {
-                mouse_released = mouse_leftclicked = mouse_doubleclicked = 
+                mouse_released = mouse_leftclicked = mouse_doubleclicked = mouse_valid =
                 mouse_rightclicked = mouse_clicked = just_released_post = just_selected_post = false;
-                selection = 0;
+                selected_post = 0;
                 mouse_pos = ImVec2();
             }
         }current_frame;
 
         
+        void PopulateCurrentFrameInfo();
         void RenderPost(Post& post);
+        void RenderConnections();
         void ShowDebugWindow();
-        void DragPost();
         
+        
+        float s_unit; // Short for "screen unit" -> ImGui::GetFontSize() every frame
 
-        void SetSelectedPost(std::size_t idx);
+        
 
         std::size_t leftclicked_idx = 0;
         std::size_t rightclicked_idx = 0;
+
+        void SetSelectedPost(std::size_t idx);
+        void DragSelectedPost();
 
         struct PostRenderingInfo
         {
             ImRect total_rect;
             
-            //pair.first = displaying rectangle
-            //pair.second = editing rectangle
+            // pair.first = displaying rectangle
+            // pair.second = editing rectangle
             LuaVector<std::pair<ImRect, ImRect>> content_rects = LuaVector<std::pair<ImRect, ImRect>>(true);
         };
         LuaVector<PostRenderingInfo> posts_info;
@@ -78,11 +88,9 @@ namespace sb
             float scroll_max_y = 0;
 
             ImVec2 content_size = ImVec2();
-            std::vector<std::pair<std::size_t, std::size_t>> connections;
             void Reset() 
             {
                 scroll_max_x = scroll_max_y = 0; 
-                connections.clear();
             }
 
         }last_frame_info;      

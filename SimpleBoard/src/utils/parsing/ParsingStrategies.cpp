@@ -1,5 +1,6 @@
 #include "ParsingStrategies.hpp"
 
+
 namespace utils
 {
 	const PostContentIntoLuaTable ParsingStrategies::PostContentToTable_Default = [](const LuaVector<PostContent>& post_content) -> sol::table
@@ -183,11 +184,25 @@ namespace utils
  			}
 		}
 
+		sol::object connections = table["connections"];
+		if (connections.valid())
+		{
+			sol::table connections_table = connections;
+			for (auto connection : connections_table)
+			{
+				sol::table pair = connection.second.as<sol::table>();
+				std::size_t from = pair[1];
+				std::size_t to = pair[2];
+				container.connections.EmplaceBack(from, to);
+			}
+		}
+
 		return container;
 	};
 
 	const ContainerIntoLuaTable ParsingStrategies::ContainerToTable_Default = [](const PostContainer& container) -> sol::table
 	{
+		
 		sol::table posts_table = LuaStack::EmptyTable();
 		for (std::size_t i = 1; i <= container.size(); i++)
 		{
@@ -254,9 +269,19 @@ namespace utils
 		board_config["bg_color"][2] = color_table.RGBFloatToInt(bg_color[1]);
 		board_config["bg_color"][3] = color_table.RGBFloatToInt(bg_color[2]);
 
+		sol::table connections = LuaStack::EmptyTable();
+		for (const PostContainer::PostConnection& connection : container.connections)
+		{
+			sol::table c = LuaStack::EmptyTable();
+			c[1] = connection.from;
+			c[2] = connection.to;
+			connections.add(c);
+		}
+
 		sol::table file = LuaStack::EmptyTable();
 		file["posts"] = posts_table;
 		file["board_config"] = board_config;
+		file["connections"] = connections;
 
 		return file;
 	};

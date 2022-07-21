@@ -95,32 +95,36 @@ namespace sb
 
 	void PostContainer::ReconnectNodes(std::unordered_map<std::size_t, std::size_t>& index_changes)
 	{
-		for (Post& post : posts)
-		{
-			Tags& tags = post.tags;
+		std::vector<LuaVector<PostConnection>::iterator> to_delete;
 
-			if (tags.HasConnection())
+		for (auto it = connections.begin(); it != connections.end(); it++)
+		{
+			auto& connection = *it;
+			auto& from = connection.from;
+			auto& to = connection.to;
+
+			auto CheckIdx = [&index_changes, &to_delete, &it](std::size_t& idx) -> void
 			{
-				auto& next = tags["connects_to"];
-				for (int i = next.size(); i >= 1; i--)
+				if (index_changes.contains(idx))
 				{
-					auto& entry = next[i];
-					if (!entry.isInt()) continue; // Should not happen, but here is a safeguard
-					std::size_t link = entry.asInt();
-					if (index_changes.contains(link))
+					auto new_idx = index_changes[idx];
+					if (new_idx == 0)
 					{
-						std::size_t change_to = index_changes[link];
-						if (change_to == 0)
-						{
-							tags.RemoveFromKey("connects_to", link);
-						}
-						else
-						{
-							entry = change_to;
-						}
+						to_delete.emplace_back(it);
+						return;
 					}
+					idx = new_idx;
+
 				}
-			}
+			};
+
+			CheckIdx(from);
+			CheckIdx(to);
+		}
+
+		for (int i = to_delete.size() - 1; i >= 0; i--)
+		{
+			connections.Erase(to_delete[i]);
 		}
 	}
 
@@ -128,6 +132,7 @@ namespace sb
 	{
 		if (size() != c2.size()) return false;
 		if (board_options != c2.board_options) return false;
+		if (connections != c2.connections) return false;
 		for (std::size_t i = 1; i <= size(); i++)
 		{
 			const Post& p1 = posts[i];

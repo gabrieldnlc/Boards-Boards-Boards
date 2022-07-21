@@ -16,6 +16,7 @@ project "SimpleBoard"
 	location "SimpleBoard"
 	kind "ConsoleApp"
 	language "C++"
+	defines{"IMGUI_DEFINE_MATH_OPERATORS"}
 
 	targetdir (target_dir)
 	objdir ("bin-int/" .. output_dir .. "/%{prj.name}")
@@ -111,7 +112,7 @@ project "Tests"
 		("{COPYDIR} ../SimpleBoard/scripts/serpent ../" .. target_dir .. "/scripts/serpent"),
 	}
 
-	links { "SimpleBoard", "PostContainer.obj", "LuaStack.obj", "lua54.lib" }
+	links { "SimpleBoard", "PostContainer.obj", "LuaStack.obj", "ParsingStrategies.obj", "lua54.lib" }
 	files{
 		"%{prj.name}/**.cpp",
 

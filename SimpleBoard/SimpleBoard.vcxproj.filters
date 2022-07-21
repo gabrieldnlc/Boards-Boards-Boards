@@ -69,9 +69,6 @@
     <ClInclude Include="src\renderables\posts\PostContent.hpp">
       <Filter>src\renderables\posts</Filter>
     </ClInclude>
-    <ClInclude Include="src\utils\LuaValue.hpp">
-      <Filter>src\renderables\posts</Filter>
-    </ClInclude>
     <ClInclude Include="src\renderables\posts\Tags.hpp">
       <Filter>src\renderables\posts</Filter>
     </ClInclude>
@@ -102,6 +99,9 @@
     <ClInclude Include="src\utils\LuaStack.hpp">
       <Filter>src\utils</Filter>
     </ClInclude>
+    <ClInclude Include="src\utils\LuaValue.hpp">
+      <Filter>src\utils</Filter>
+    </ClInclude>
     <ClInclude Include="src\utils\OperationsQueue.hpp">
       <Filter>src\utils</Filter>
     </ClInclude>
@@ -117,6 +117,7 @@
     <ClInclude Include="src\utils\parsing\ScriptParser.hpp">
       <Filter>src\utils\parsing</Filter>
     </ClInclude>
+    <ClInclude Include="src\utils\Bezier.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="extern\imgui\backends\imgui_impl_dx11.cpp">
@@ -173,6 +174,8 @@
     <ClCompile Include="src\utils\LuaStack.cpp">
       <Filter>src\utils</Filter>
     </ClCompile>
-    <ClCompile Include="src\utils\parsing\ParsingStrategies.cpp" />
+    <ClCompile Include="src\utils\parsing\ParsingStrategies.cpp">
+      <Filter>src\utils\parsing</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
