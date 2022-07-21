@@ -1,17 +1,17 @@
 #pragma once
 
+#include <string>
+
 #include "imgui_internal.h" //for ImRect
 
 #include "renderables/Widget.hpp"
 #include "renderables/posts/Post.hpp"
 #include "containers/PostContainer.hpp"
 #include "utils/FilePath.hpp"
-#include "utils/ColorTable.hpp"
 
 namespace sb
 {
     using std::string;
-    using utils::ColorTable;
 
     class BoardTab : public Widget
     {
@@ -30,30 +30,57 @@ namespace sb
 
         struct CurrentFrameInfo
         {
-            bool mouse_valid = false;
-            bool mouse_clicked = false;
-            bool mouse_leftclicked = false;
-            bool mouse_doubleclicked = false;
-            bool mouse_released = false;
-            bool dragging_leftclick = false;
-            bool dragging_post = false;
-            bool mouse_rightclicked = false;
+            
             bool just_selected_post = false;
             bool just_released_post = false;
 
-            std::size_t selected_post = 0;
-            std::size_t hovered_connection = 0;
+            struct Mouse
+            {
+                bool valid = false;
+                bool clicked = false;
+                bool leftclicked = false;
+                bool rightclicked = false;
+                bool doubleclicked = false;
+                bool released = false;
+                bool dragging_leftclick = false;
+                bool dragging_post = false;
+                ImVec2 pos = ImVec2();
 
-            ImVec2 mouse_pos = ImVec2();
+                void Reset()
+                {
+                    released = leftclicked = doubleclicked =
+                        valid = rightclicked = clicked = false;
+                    pos = ImVec2();
+                }
+            }mouse;
+
+            struct Selections
+            {
+                std::size_t connection = 0;
+                std::size_t post = 0;
+
+            }selections;
+
+            struct NewConnection
+            {
+                bool creating = false;
+                std::size_t from = 0;
+                std::size_t to = 0;
+
+                void Reset()
+                {
+                    creating = false;
+                    from = to = 0;
+                }
+            }new_connection;
 
             void Reset()
             {
-                mouse_released = mouse_leftclicked = mouse_doubleclicked = mouse_valid =
-                mouse_rightclicked = mouse_clicked = just_released_post = just_selected_post = false;
-                selected_post = 0;
-                mouse_pos = ImVec2();
+                mouse.Reset();
+                just_released_post = just_selected_post = false;
+                selections.post = 0;
             }
-        }current_frame;
+        }curr_frame;
 
         
         void PopulateCurrentFrameInfo();
@@ -61,10 +88,8 @@ namespace sb
         void RenderConnections();
         void ShowDebugWindow();
         
-        
+     
         float s_unit; // Short for "screen unit" -> ImGui::GetFontSize() every frame
-
-        
 
         std::size_t leftclicked_idx = 0;
         std::size_t rightclicked_idx = 0;

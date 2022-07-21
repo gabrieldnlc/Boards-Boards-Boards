@@ -118,7 +118,7 @@ xcopy /Q /E /Y /I scripts ..\bin\Release-windows-x86\$(ProjectName)\scripts</Com
     <ClInclude Include="src\renderables\windows\ErrorPrompt.hpp" />
     <ClInclude Include="src\renderables\windows\Prompt.hpp" />
     <ClInclude Include="src\utils\Bezier.hpp" />
-    <ClInclude Include="src\utils\ColorTable.hpp" />
+    <ClInclude Include="src\utils\BoardColors.hpp" />
     <ClInclude Include="src\utils\Error.hpp" />
     <ClInclude Include="src\utils\FileDialog.hpp" />
     <ClInclude Include="src\utils\FilePath.hpp" />

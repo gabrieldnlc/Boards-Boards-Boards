@@ -5,10 +5,10 @@
 
 #include "renderables/DearImGuiFlags.hpp"
 #include "renderables/posts/PostContent.hpp"
-#include "utils/ColorTable.hpp"
+#include "utils/BoardColors.hpp"
 #include "utils/Bezier.hpp"
 
-using utils::ColorTable;
+using utils::BoardColors;
 using utils::CubicBezier;
 using utils::GetCubicBezier;
 using utils::DrawCubicBezier;
@@ -125,20 +125,63 @@ namespace sb
 		}
 	}
 
-	void ShowColorPanel(utils::ColorTable& color_table)
+	void ShowColorPanel(utils::BoardColors& color_table)
 	{
-		ImGui::Begin("Color Panel", NULL, PopupWindowFlags);
-		auto& post_color = color_table.post_color;
-		auto& bg_color = color_table.bg_color;
+		float y_pos[4];
+		float x_pos = 0;
 
-		ImGui::PushID((void*)&post_color);
-		ImGui::Text("Post Color:"); ImGui::SameLine();
-		ImGui::ColorEdit3("", &post_color[0]);
+		ImGui::Begin("Color Panel", NULL, PopupWindowFlags);
+		auto& post = color_table.post;
+		auto& bg = color_table.bg;
+		auto& connection = color_table.connection;
+		auto& selected_connection = color_table.selected_connection;
+
+		
+		ImGui::Text("Posts:"); ImGui::SameLine();
+		if (ImGui::GetCursorPosX() > x_pos) x_pos = ImGui::GetCursorPosX();
+		y_pos[0] = ImGui::GetCursorPosY();
+		ImGui::NewLine();
+		ImGui::NewLine();
+
+		
+		ImGui::Text("Background:"); ImGui::SameLine();
+		if (ImGui::GetCursorPosX() > x_pos) x_pos = ImGui::GetCursorPosX();
+		y_pos[1] = ImGui::GetCursorPosY();
+		ImGui::NewLine();
+		ImGui::NewLine();
+
+		
+		ImGui::Text("Connections:"); ImGui::SameLine();
+		if (ImGui::GetCursorPosX() > x_pos) x_pos = ImGui::GetCursorPosX();
+		y_pos[2] = ImGui::GetCursorPosY();
+		ImGui::NewLine();
+		ImGui::NewLine();
+
+
+		ImGui::Text("Selected connection:"); ImGui::SameLine();
+		if (ImGui::GetCursorPosX() > x_pos) x_pos = ImGui::GetCursorPosX();
+		y_pos[3] = ImGui::GetCursorPosY();
+		ImGui::NewLine();
+		ImGui::NewLine();
+
+		ImGui::PushID((void*)&post);
+		ImGui::SetCursorPos(ImVec2(x_pos, y_pos[0]));
+		ImGui::ColorEdit3("", &post[0]);
 		ImGui::PopID();
 
-		ImGui::PushID((void*)&bg_color);
-		ImGui::Text("Background Color:"); ImGui::SameLine();
-		ImGui::ColorEdit3("", &bg_color[0]);
+		ImGui::PushID((void*)&bg);
+		ImGui::SetCursorPos(ImVec2(x_pos, y_pos[1]));
+		ImGui::ColorEdit3("", &bg[0]);
+		ImGui::PopID();
+
+		ImGui::PushID((void*)&connection);
+		ImGui::SetCursorPos(ImVec2(x_pos, y_pos[2]));
+		ImGui::ColorEdit3("", &connection[0]);
+		ImGui::PopID();
+
+		ImGui::PushID((void*)&selected_connection);
+		ImGui::SetCursorPos(ImVec2(x_pos, y_pos[3]));
+		ImGui::ColorEdit3("", &selected_connection[0]);
 		ImGui::PopID();
 
 		ImGui::End();
@@ -160,11 +203,13 @@ namespace sb
 		}
 		std::size_t new_idx = container.MoveToLastPosition(idx)->GetIdx();
 		leftclicked_idx = new_idx;
-		current_frame.just_selected_post = true;
+		curr_frame.just_selected_post = true;
 	}
 	
 	void BoardTab::RenderPost(Post& post)
 	{
+		BoardColors& color_table = container.board_options.color_table;
+
 		ImDrawList* draw_list = ImGui::GetWindowDrawList();
 		auto& display_pos = post.display_pos;
 		std::size_t idx = post.GetIdx();
@@ -178,7 +223,9 @@ namespace sb
 		
 		const bool has_info = total_rect.GetHeight() != 0;
 		const bool has_color = (post.color[0] >= 0 && post.color[1] >= 0 && post.color[2] >= 0);
-		const auto& color = (has_color ? post.color : container.board_options.color_table.post_color);
+
+		const auto& color = (has_color ? post.color : color_table.post);
+
 		ImColor post_color_inner = ImColor(color[0], color[1], color[2]);
 		ImColor post_color_outer = ImColor(color[0] * 0.70f, color[1] * 0.70f, color[2] * 0.70f);
 
@@ -202,19 +249,20 @@ namespace sb
 		total_rect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
 		total_rect.Expand(5);
 
-		if (current_frame.mouse_clicked)
+		if (curr_frame.mouse.clicked)
 		{
-			ImVec2& mouse_pos = current_frame.mouse_pos;
+			ImVec2& mouse_pos = curr_frame.mouse.pos;
 			bool inner_click = total_rect.Contains(mouse_pos);
 			bool outer_click = item_rect_outer.Contains(mouse_pos);
 
 			if (inner_click || outer_click)
 			{
-				if (current_frame.mouse_leftclicked)
+				
+				if (curr_frame.mouse.leftclicked)
 				{
-					current_frame.selected_post = idx;
+					curr_frame.selections.post = idx;
 				}
-				else if (current_frame.mouse_rightclicked)
+				else if (curr_frame.mouse.rightclicked)
 				{
 					rightclicked_idx = idx;
 				}				
@@ -229,6 +277,14 @@ namespace sb
 		
 	}
 
+	ImVec2 GetRectCenter(const ImRect& rect)
+	{
+		ImVec2 size = rect.GetSize();
+		float middle_x = rect.Min.x + (size.x / 2);
+		float middle_y = rect.Min.y + (size.y / 2);
+		return ImVec2(middle_x, middle_y);
+	}
+
 	void BoardTab::DragSelectedPost()
 	{
 		if (leftclicked_idx == 0) return;
@@ -238,7 +294,7 @@ namespace sb
 
 		if (current_post.editing_content != 0) return;
 
-		current_frame.dragging_post = true;
+		curr_frame.mouse.dragging_post = true;
 		
 		ImVec2 delta = ImGui::GetMouseDragDelta();
 		post_display_pos.first += delta.x;
@@ -270,9 +326,9 @@ namespace sb
 		ImGui::Text("Max: X: %2.f, Y: %2.f", scroll_max.x, scroll_max.y);
 
 
-		if (current_frame.mouse_valid)
+		if (curr_frame.mouse.valid)
 		{
-			ImGui::Text("Mouse Pos: %1.f, %1.f", current_frame.mouse_pos.x, current_frame.mouse_pos.y);
+			ImGui::Text("Mouse Pos: %1.f, %1.f", curr_frame.mouse.pos.x, curr_frame.mouse.pos.y);
 		}
 		if (ImGui::IsMouseDragging(0))
 		{
@@ -281,10 +337,10 @@ namespace sb
 			ImGui::Text("Drag: %1.f, %1.f", drag.x, drag.y);
 		}
 		
-		if (leftclicked_idx > 0 && current_frame.selected_post == 0)
+		if (leftclicked_idx > 0 && curr_frame.selections.post == 0)
 		{
-			const Post& selected_post = container[leftclicked_idx];
-			const auto& content = selected_post.content;
+			const Post& post = container[leftclicked_idx];
+			const auto& content = post.content;
 
 			const PostRenderingInfo& post_info = posts_info[leftclicked_idx];
 			const ImRect& total_rect = post_info.total_rect;
@@ -292,7 +348,7 @@ namespace sb
 
 			ImGui::NewLine();
 			ImGui::Text("Left clicked Post: %i", leftclicked_idx);
-			ImGui::Text("Display Pos: %1.f, %1.f", selected_post.display_pos.first, selected_post.display_pos.second);
+			ImGui::Text("Display Pos: %1.f, %1.f", post.display_pos.first, post.display_pos.second);
 			ImGui::Text("Rect Min: %1.f, %1.f", total_rect.Min.x, total_rect.Min.y);
 			ImGui::Text("Rect Max: %1.f, %1.f", total_rect.Max.x, total_rect.Max.y);
 			ImGui::Text("Rect Size: %1.f, %1.f", total_rect.GetSize().x, total_rect.GetSize().y);
@@ -304,20 +360,20 @@ namespace sb
 				const auto& displaying_rect = rects.first;
 				const auto& editing_rect = rects.second;
 				
-				const auto& current_rect = (selected_post.editing_content == i ? editing_rect : displaying_rect);
+				const auto& current_rect = (post.editing_content == i ? editing_rect : displaying_rect);
 				ImVec2 rect_size = current_rect.GetSize();
 
 				ImGui::NewLine();
 				ImGui::Text("Content %i: %s", i, c.GetPrettyType());
-				ImGui::Text("Current mode: %s", (selected_post.editing_content == i ? "Editing" : "Displaying"));
+				ImGui::Text("Current mode: %s", (post.editing_content == i ? "Editing" : "Displaying"));
 				ImGui::Text("Rect Min: %1.f, %1.f", current_rect.Min.x, current_rect.Min.y);
 				ImGui::Text("Rect Max: %1.f, %1.f", current_rect.Max.x, current_rect.Max.y);
 				ImGui::Text("Rect Size: %1.f, %1.f", rect_size.x, rect_size.y);
 			}
 
-			if (current_frame.dragging_post)
+			if (curr_frame.mouse.dragging_post)
 			{
-				ImGui::Text("Currently dragging post %i", selected_post.GetIdx());
+				ImGui::Text("Currently dragging post %i", post.GetIdx());
 			}
 		}
 		if (rightclicked_idx != 0)
@@ -325,9 +381,9 @@ namespace sb
 			ImGui::NewLine();
 			ImGui::Text("Right clicked post: %i", rightclicked_idx);
 		}
-		if (current_frame.hovered_connection > 0)
+		if (curr_frame.selections.connection > 0)
 		{
-			ImGui::Text("Hovered connection: %i", current_frame.hovered_connection);
+			ImGui::Text("Hovered connection: %i", curr_frame.selections.connection);
 		}
 
 		ImGui::End();
@@ -335,21 +391,22 @@ namespace sb
 
 	void BoardTab::PopulateCurrentFrameInfo()
 	{
-		current_frame.Reset();
-		current_frame.mouse_valid = ImGui::IsMousePosValid();
-		current_frame.mouse_leftclicked = ImGui::IsMouseClicked(0);
-		current_frame.mouse_doubleclicked = ImGui::IsMouseDoubleClicked(0);
-		current_frame.mouse_released = ImGui::IsMouseReleased(0);
-		current_frame.mouse_rightclicked = ImGui::IsMouseClicked(1);
-		current_frame.mouse_clicked = current_frame.mouse_leftclicked || current_frame.mouse_rightclicked;
-		current_frame.mouse_pos = ImGui::GetMousePos();
+		curr_frame.Reset();
+		curr_frame.mouse.valid = ImGui::IsMousePosValid();
+		curr_frame.mouse.leftclicked = ImGui::IsMouseClicked(0);
+		curr_frame.mouse.doubleclicked = ImGui::IsMouseDoubleClicked(0);
+		curr_frame.mouse.released = ImGui::IsMouseReleased(0);
+		curr_frame.mouse.rightclicked = ImGui::IsMouseClicked(1);
+		curr_frame.mouse.clicked = curr_frame.mouse.leftclicked || curr_frame.mouse.rightclicked;
+		curr_frame.mouse.pos = ImGui::GetMousePos();
 	}
 
 	void BoardTab::RenderConnections()
 	{
 		ImDrawList* draw_list = ImGui::GetWindowDrawList();
+		BoardColors& colors = container.board_options.color_table;
 
-		std::size_t hovered_connection = 0;
+		std::size_t hovered = 0;
 
 		const float curve_thickness = s_unit / 2;
 		const float selection_threshold = s_unit / 2;
@@ -363,48 +420,60 @@ namespace sb
 
 			std::size_t start_idx = connection.from;
 			std::size_t end_idx = connection.to;
-
-			ImVec2& start_p = posts_info[start_idx].total_rect.Max;
-			ImVec2& end_p = posts_info[end_idx].total_rect.Min;
+			
+			ImVec2 start_p = GetRectCenter(posts_info[start_idx].total_rect);
+			ImVec2 end_p = GetRectCenter(posts_info[end_idx].total_rect);
 
 			CubicBezier bezier = GetCubicBezier(start_p, end_p);
 
-			DrawCubicBezier(bezier, IM_COL32_WHITE, curve_thickness);
+			DrawCubicBezier(bezier, colors.ArrayToImColor(colors.connection), curve_thickness);
 
-			if (IsMouseOnCubicBezier(bezier, current_frame.mouse_pos, selection_threshold))
+			if (IsMouseOnCubicBezier(bezier, curr_frame.mouse.pos, selection_threshold))
 			{
-				hovered_connection = i;
+				hovered = i;
 			}
 		}
 
-		if (hovered_connection > 0 && current_frame.hovered_connection == 0)
+		if (hovered > 0 && curr_frame.selections.connection == 0)
 		{
-			current_frame.hovered_connection = hovered_connection;
+			curr_frame.selections.connection = hovered;
 		}
 
-		if (current_frame.hovered_connection > 0)
+		if (curr_frame.selections.connection > 0)
 		{
-			auto& connection = container.connections[current_frame.hovered_connection];
+			auto& connection = container.connections[curr_frame.selections.connection];
 
 			std::size_t start_idx = connection.from;
 			std::size_t end_idx = connection.to;
 
-			ImVec2& start_p = posts_info[start_idx].total_rect.Max;
-			ImVec2& end_p = posts_info[end_idx].total_rect.Min;
+			ImVec2 start_p = GetRectCenter(posts_info[start_idx].total_rect);
+			ImVec2 end_p = GetRectCenter(posts_info[end_idx].total_rect);
 
 			draw_list->ChannelsSetCurrent(0);
 
 			CubicBezier bezier = GetCubicBezier(start_p, end_p);
 
-			DrawCubicBezier(bezier, IM_COL32_BLACK, selected_curve_thickness);
+			DrawCubicBezier(bezier, colors.ArrayToImColor(colors.selected_connection), selected_curve_thickness);
+		}
+
+		if (curr_frame.new_connection.creating)
+		{
+			auto& post_rect = posts_info[curr_frame.new_connection.from].total_rect;
+			ImVec2 from = GetRectCenter(post_rect);
+			ImVec2 to = curr_frame.mouse.pos;
+
+			CubicBezier bezier = GetCubicBezier(from, to);
+
+			DrawCubicBezier(bezier, colors.ArrayToImColor(colors.connection), curve_thickness);
+
 		}
 	}
 
 	void BoardTab::Render()
 	{
-		
+		BoardColors& color_table = container.board_options.color_table;
 
-		ImGui::PushStyleColor(ImGuiCol_ChildBg, ColorTable::ArrayToImColor(container.board_options.color_table.bg_color).operator ImVec4());
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, BoardColors::ArrayToImColor(color_table.bg).operator ImVec4());
 		ImGui::BeginChild("active tab", ImVec2(0, 0), false, TabChildWindowFlags);
 
 		s_unit = ImGui::GetFontSize();
@@ -418,10 +487,10 @@ namespace sb
 
 		PopulateCurrentFrameInfo();
 		
-		if (current_frame.dragging_post && current_frame.mouse_released)
+		if (curr_frame.mouse.dragging_post && curr_frame.mouse.released)
 		{
-			current_frame.dragging_post = false;
-			current_frame.just_released_post = true;
+			curr_frame.mouse.dragging_post = false;
+			curr_frame.just_released_post = true;
 		}
 
 		if (ImGui::IsMouseDragging(0) && ImGui::IsWindowFocused())
@@ -452,19 +521,42 @@ namespace sb
 		ImGui::ShowMetricsWindow();
 		#endif
 
-		if (current_frame.mouse_leftclicked)
+		if (curr_frame.mouse.leftclicked)
 		{
-			SetSelectedPost(current_frame.selected_post);
+			if (curr_frame.new_connection.creating)
+			{
+				if (curr_frame.selections.post == 0 || curr_frame.new_connection.from == curr_frame.selections.post)
+				{
+					curr_frame.new_connection.Reset();
+				}
+				else
+				{
+					curr_frame.new_connection.to = curr_frame.selections.post;
+
+					container.connections.EmplaceBack(curr_frame.new_connection.from, curr_frame.new_connection.to);
+
+					curr_frame.new_connection.Reset();
+				}
+			}
+			else
+			{
+				SetSelectedPost(curr_frame.selections.post);
+			}
+			
 		}
 
-		if (current_frame.mouse_doubleclicked && leftclicked_idx > 0)
+		if (curr_frame.mouse.doubleclicked && leftclicked_idx > 0)
 		{
-			StartEditingPost(container[leftclicked_idx], posts_info[leftclicked_idx].content_rects, current_frame.mouse_pos);
+			StartEditingPost(container[leftclicked_idx], posts_info[leftclicked_idx].content_rects, curr_frame.mouse.pos);
 		}
 
-		if (current_frame.mouse_rightclicked)
+		if (curr_frame.mouse.rightclicked)
 		{
-			if (current_frame.hovered_connection == 0)
+			if (curr_frame.new_connection.creating)
+			{
+				curr_frame.new_connection.Reset();
+			}
+			if (curr_frame.selections.connection == 0)
 			{
 				if (rightclicked_idx == 0)
 				{
@@ -485,15 +577,15 @@ namespace sb
 		{
 			if (ImGui::MenuItem("Remove connection"))
 			{
-				auto to_remove = container.connections.IteratorFromIndex(current_frame.hovered_connection);
+				auto to_remove = container.connections.IteratorFromIndex(curr_frame.selections.connection);
 				container.connections.Erase(to_remove);
-				current_frame.hovered_connection = 0;
+				curr_frame.selections.connection = 0;
 			}
 			ImGui::EndPopup();
 		}
 		else
 		{
-			current_frame.hovered_connection = 0;
+			curr_frame.selections.connection = 0;
 		}
 
 		if (ImGui::BeginPopup("add post"))
@@ -518,9 +610,14 @@ namespace sb
 
 			}
 			if (ImGui::MenuItem("Remove Post"))
-			{
+			{// TODO: confirmation of deletion
 				container.Erase(container.IteratorFromIndex(rightclicked_idx));
 				rightclicked_idx = 0;
+			}
+			if (ImGui::MenuItem("Connect to..."))
+			{
+				curr_frame.new_connection.creating = true;
+				curr_frame.new_connection.from = rightclicked_idx;
 			}
 
 			ImGui::EndPopup();

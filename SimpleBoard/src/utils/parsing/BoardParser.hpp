@@ -12,6 +12,6 @@ namespace utils
 	class BoardParser : public ScriptParser<PostContainer>
 	{
 	public:
-		BoardParser(LuaTableIntoContainer parseTable = ParsingStrategies::TableToContainer_Default, ContainerIntoLuaTable parseContainer = ParsingStrategies::ContainerToTable_Default) : ScriptParser<PostContainer>(parseTable, parseContainer) {}
+		BoardParser(LuaTableIntoContainer parseTable = ParsingStrategies::TableToContainer, ContainerIntoLuaTable parseContainer = ParsingStrategies::ContainerToTable) : ScriptParser<PostContainer>(parseTable, parseContainer) {}
 	};
 }

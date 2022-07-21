@@ -5,11 +5,11 @@
 
 #include "LuaVector.hpp"
 #include "renderables/posts/Post.hpp"
-#include "utils/ColorTable.hpp"
+#include "utils/BoardColors.hpp"
 
 using std::string;
 using std::unordered_map;
-using utils::ColorTable;
+using utils::BoardColors;
 
 namespace sb
 {
@@ -54,7 +54,7 @@ namespace sb
 
 		struct BoardOptions
 		{
-			ColorTable color_table;
+			BoardColors color_table;
 
 			bool operator==(const BoardOptions& another_board) const
 			{

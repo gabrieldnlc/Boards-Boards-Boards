@@ -6,7 +6,7 @@
 #include "containers/LuaVector.hpp"
 #include "containers/PostContainer.hpp"
 #include "renderables/posts/PostContent.hpp"
-#include "utils/ColorTable.hpp"
+#include "utils/BoardColors.hpp"
 #include "utils/Error.hpp"
 
 namespace utils
@@ -27,13 +27,13 @@ namespace utils
 	{
 	public:
 
-		static const PostContentIntoLuaTable PostContentToTable_Default;
+		static const PostContentIntoLuaTable PostContentToTable;
 
-		static const LuaObjectIntoPost ObjectToPost_Default;
+		static const LuaObjectIntoPost ObjectToPost;
 
-		static const LuaTableIntoContainer TableToContainer_Default;
+		static const LuaTableIntoContainer TableToContainer;
 
-		static const ContainerIntoLuaTable ContainerToTable_Default;
+		static const ContainerIntoLuaTable ContainerToTable;
 	};
 		
 	

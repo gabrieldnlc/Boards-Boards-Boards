@@ -84,7 +84,7 @@
     <ClInclude Include="src\renderables\windows\Prompt.hpp">
       <Filter>src\renderables\windows</Filter>
     </ClInclude>
-    <ClInclude Include="src\utils\ColorTable.hpp">
+    <ClInclude Include="src\utils\BoardColors.hpp">
       <Filter>src\utils</Filter>
     </ClInclude>
     <ClInclude Include="src\utils\Error.hpp">
