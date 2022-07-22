@@ -84,6 +84,9 @@
     <ClInclude Include="src\renderables\windows\Prompt.hpp">
       <Filter>src\renderables\windows</Filter>
     </ClInclude>
+    <ClInclude Include="src\utils\Bezier.hpp">
+      <Filter>src\utils</Filter>
+    </ClInclude>
     <ClInclude Include="src\utils\BoardColors.hpp">
       <Filter>src\utils</Filter>
     </ClInclude>
@@ -102,7 +105,7 @@
     <ClInclude Include="src\utils\LuaValue.hpp">
       <Filter>src\utils</Filter>
     </ClInclude>
-    <ClInclude Include="src\utils\OperationsQueue.hpp">
+    <ClInclude Include="src\utils\CommandQueue.hpp">
       <Filter>src\utils</Filter>
     </ClInclude>
     <ClInclude Include="src\utils\parsing\BoardParser.hpp">
@@ -117,7 +120,6 @@
     <ClInclude Include="src\utils\parsing\ScriptParser.hpp">
       <Filter>src\utils\parsing</Filter>
     </ClInclude>
-    <ClInclude Include="src\utils\Bezier.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="extern\imgui\backends\imgui_impl_dx11.cpp">

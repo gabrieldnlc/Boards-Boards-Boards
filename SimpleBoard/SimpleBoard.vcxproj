@@ -124,7 +124,7 @@ xcopy /Q /E /Y /I scripts ..\bin\Release-windows-x86\$(ProjectName)\scripts</Com
     <ClInclude Include="src\utils\FilePath.hpp" />
     <ClInclude Include="src\utils\LuaStack.hpp" />
     <ClInclude Include="src\utils\LuaValue.hpp" />
-    <ClInclude Include="src\utils\OperationsQueue.hpp" />
+    <ClInclude Include="src\utils\CommandQueue.hpp" />
     <ClInclude Include="src\utils\parsing\BoardParser.hpp" />
     <ClInclude Include="src\utils\parsing\ParsingHelpers.hpp" />
     <ClInclude Include="src\utils\parsing\ParsingStrategies.hpp" />

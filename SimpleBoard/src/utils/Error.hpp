@@ -48,10 +48,10 @@ namespace utils
 	public:
 		FileWriteError(std::string msg = "Could not write to file.") : Error(std::move(msg)) {}
 	};
-	class OperationQueueError : public Error
+	class CommandQueueError : public Error
 	{
 	public:
-		OperationQueueError(std::string msg = "Mismatched Target/Operation combination.") : Error(std::move(msg)) {}
+		CommandQueueError(std::string msg = "Mismatched Target/Operation combination.") : Error(std::move(msg)) {}
 	};
 
 	class LuaVectorError : public Error

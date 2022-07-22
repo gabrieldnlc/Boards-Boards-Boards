@@ -3,7 +3,7 @@
 #include "imgui.h"
 
 #include "UI.hpp"
-#include "utils/OperationsQueue.hpp"
+#include "utils/CommandQueue.hpp"
 #include "utils/LuaStack.hpp"
 #include "utils/Error.hpp"
 #include "utils/FileDialog.hpp"
@@ -17,6 +17,8 @@ namespace sb
 	void UI::Render()
 	{
         ImGui::BeginMainMenuBar();
+
+        const bool NoTab = !widgets.hasActiveTab();
 
         if (ImGui::BeginMenu("File"))
         {
@@ -32,7 +34,7 @@ namespace sb
                         {
                             if (!path.empty())
                             {
-                                OperationQueue::addToQueue(OperationQueue::targets::widgetManager, OperationQueue::operations::openFile, path);
+                                CommandQueue::addToQueue(CommandQueue::targets::widgetManager, CommandQueue::commands::openFile, path);
                             }
                         }
                     }
@@ -43,7 +45,7 @@ namespace sb
                     widgets.NewErrorPrompt(e.what());
                 }
             }
-            if (!widgets.hasActiveTab())
+            if (NoTab)
             {
                 ImGui::BeginDisabled();
             }
@@ -69,7 +71,7 @@ namespace sb
                 }
                 
             }
-            if (!widgets.hasActiveTab())
+            if (NoTab)
             {
                 ImGui::EndDisabled();
             }
@@ -80,18 +82,16 @@ namespace sb
             ImGui::EndMenu();
         }
 
+        if (NoTab) ImGui::BeginDisabled();
         if (ImGui::BeginMenu("View"))
         {
-            if (ImGui::MenuItem("Show all windows"))
+            if (ImGui::MenuItem("Color Table"))
             {
-
-            }
-            if (ImGui::MenuItem("Collapse all windows"))
-            {
-
+                CommandQueue::addToQueue(CommandQueue::targets::currentTab, CommandQueue::commands::openColorPanel);
             }
             ImGui::EndMenu();
         }
+        if (NoTab) ImGui::EndDisabled();
 
         ImGui::EndMainMenuBar();
 
@@ -101,7 +101,7 @@ namespace sb
         }
         catch (std::exception& err)
         {
-            std::cout << "Error: " << err.what();
+            std::cout << "Error: " << err.what() << '\n';
         }
 
         #ifdef BOARD_DEBUG

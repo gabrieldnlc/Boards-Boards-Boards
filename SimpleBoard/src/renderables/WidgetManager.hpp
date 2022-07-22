@@ -20,7 +20,7 @@ namespace sb
 		//TODO documentation that if !hasActiveTab() using the reference will be undefined behavior
 		BoardTab& getActiveTab() { return tab_bar.getActiveTab(); }
 	private:
-		void OperationsQueueLookup();
+		void CommandQueueLookup();
 
 		TabBar tab_bar;
 

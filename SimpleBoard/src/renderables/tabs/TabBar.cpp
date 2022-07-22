@@ -9,7 +9,7 @@
 #include "utils/LuaStack.hpp"
 #include "utils/parsing/BoardParser.hpp"
 #include "renderables/DearImGuiFlags.hpp"
-#include "utils/OperationsQueue.hpp"
+#include "utils/CommandQueue.hpp"
 
 using utils::LuaStack;
 using utils::BoardParser;
@@ -29,7 +29,7 @@ namespace sb
         {
             std::stringstream stream;
             stream << "Error creating new Tab: " << e.what() << '\n';
-            OperationQueue::CreateErrorWindow(stream.str());
+            CommandQueue::CreateErrorWindow(stream.str());
         }
     }
 	void TabBar::NewBoardTab()
@@ -43,7 +43,7 @@ namespace sb
         {
             std::stringstream stream;
             stream << "Error creating new Tab: " << e.what() << '\n';
-            OperationQueue::CreateErrorWindow(stream.str());
+            CommandQueue::CreateErrorWindow(stream.str());
         }
 	}
 

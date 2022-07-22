@@ -7,7 +7,7 @@
 #include "imgui.h"
 
 #include "utils/Error.hpp"
-#include "utils/OperationsQueue.hpp"
+#include "utils/CommandQueue.hpp"
 #include "renderables/windows/ErrorPrompt.hpp"
 #include "renderables/DearImGuiFlags.hpp"
 
@@ -15,19 +15,19 @@
 namespace sb
 {
 
-	void WidgetManager::OperationsQueueLookup()
+	void WidgetManager::CommandQueueLookup()
 	{
-		while (!OperationQueue::empty(OperationQueue::targets::widgetManager))
+		while (!CommandQueue::empty(CommandQueue::targets::widgetManager))
 		{
-			auto& pair = OperationQueue::front(OperationQueue::targets::widgetManager);
-			auto& operation = pair.first;
+			auto& pair = CommandQueue::front(CommandQueue::targets::widgetManager);
+			auto& command = pair.first;
 			const std::string& data = pair.second;
-			switch (operation)
+			switch (command)
 			{
-			case (OperationQueue::operations::createErrorWindow):
+			case (CommandQueue::commands::createErrorWindow):
 				NewErrorPrompt(data);
 				break;
-			case (OperationQueue::operations::openFile):
+			case (CommandQueue::commands::openFile):
 				try
 				{
 					tab_bar.NewBoardTab(data);
@@ -38,12 +38,9 @@ namespace sb
 				}
 				break;
 			default:
-				#ifdef BOARD_DEBUG
-				std::cout << "Widget Manager received unknown operation." << '\n';
-				#endif
-				break;
+				throw utils::CommandQueueError("Widget Manager received unknown command.");
 			}
-			OperationQueue::pop(OperationQueue::targets::widgetManager);
+			CommandQueue::pop(CommandQueue::targets::widgetManager);
 		}
 	}
 
@@ -69,7 +66,7 @@ namespace sb
 
 		ImGui::End();
 
-		OperationsQueueLookup();
+		CommandQueueLookup();
 
 		for (auto it = std::begin(errors); it != std::end(errors); it++)
 		{

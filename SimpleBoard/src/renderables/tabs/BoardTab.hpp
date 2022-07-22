@@ -22,7 +22,6 @@ namespace sb
         void Render();
         enum class status { unnamed_file, fromdisk, fromdisk_modified };
         status current_status = status::unnamed_file;
-        bool is_open = true;
         const char* GetDisplayName() { return path.data(); }
         PostContainer container;
         FilePath path;
@@ -31,7 +30,7 @@ namespace sb
         struct CurrentFrameInfo
         {
             
-            bool just_selected_post = false;
+            std::size_t just_selected_post = 0;
             bool just_released_post = false;
 
             struct Mouse
@@ -49,16 +48,36 @@ namespace sb
                 void Reset()
                 {
                     released = leftclicked = doubleclicked =
-                        valid = rightclicked = clicked = false;
+                    valid = rightclicked = clicked = false;
                     pos = ImVec2();
                 }
             }mouse;
 
-            struct Selections
+            struct Hovering
             {
                 std::size_t connection = 0;
                 std::size_t post = 0;
 
+                
+                void Reset()
+                {
+                    post = 0;
+                }
+                
+
+            }hovering;
+
+            struct Popups
+            {
+                bool edit_post = false;
+                bool color_panel = false;
+            }popups;
+
+            struct Selections
+            {
+                std::size_t leftclicked = 0;
+                std::size_t rightclicked = 0;
+                
             }selections;
 
             struct NewConnection
@@ -77,8 +96,9 @@ namespace sb
             void Reset()
             {
                 mouse.Reset();
-                just_released_post = just_selected_post = false;
-                selections.post = 0;
+                hovering.Reset();
+                just_released_post = false;
+                just_selected_post = 0;
             }
         }curr_frame;
 
@@ -87,12 +107,11 @@ namespace sb
         void RenderPost(Post& post);
         void RenderConnections();
         void ShowDebugWindow();
-        
+        void CommandQueueLookup();
      
         float s_unit; // Short for "screen unit" -> ImGui::GetFontSize() every frame
 
-        std::size_t leftclicked_idx = 0;
-        std::size_t rightclicked_idx = 0;
+
 
         void SetSelectedPost(std::size_t idx);
         void DragSelectedPost();

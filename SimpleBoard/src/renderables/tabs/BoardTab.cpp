@@ -7,6 +7,8 @@
 #include "renderables/posts/PostContent.hpp"
 #include "utils/BoardColors.hpp"
 #include "utils/Bezier.hpp"
+#include "utils/CommandQueue.hpp"
+#include "utils/Error.hpp"
 
 using utils::BoardColors;
 using utils::CubicBezier;
@@ -125,12 +127,12 @@ namespace sb
 		}
 	}
 
-	void ShowColorPanel(utils::BoardColors& color_table)
+	void ShowColorPanel(utils::BoardColors& color_table, bool* is_open = NULL)
 	{
 		float y_pos[4];
 		float x_pos = 0;
 
-		ImGui::Begin("Color Panel", NULL, PopupWindowFlags);
+		ImGui::Begin("Color Panel", is_open, PopupWindowFlags);
 		auto& post = color_table.post;
 		auto& bg = color_table.bg;
 		auto& connection = color_table.connection;
@@ -187,22 +189,44 @@ namespace sb
 		ImGui::End();
 	}
 
+	void BoardTab::CommandQueueLookup()
+	{
+		while (!CommandQueue::empty(CommandQueue::targets::currentTab))
+		{
+			auto& pair = CommandQueue::front(CommandQueue::targets::currentTab);
+			auto& command = pair.first;
+			const std::string& data = pair.second;
+
+			switch (command)
+			{
+			case (CommandQueue::commands::openColorPanel):
+				curr_frame.popups.color_panel = true;
+				break;
+			default:
+				throw utils::CommandQueueError("Current Tab received unknown command.");
+			}
+
+			CommandQueue::pop(CommandQueue::targets::currentTab);
+			
+		}
+	}
+
 	void BoardTab::SetSelectedPost(std::size_t idx)
 	{
-		if (leftclicked_idx == idx) return;
+		if (curr_frame.selections.leftclicked == idx) return;
 
-		if (leftclicked_idx > 0) // "clear" the old selected node, if any
+		if (curr_frame.selections.leftclicked > 0) // "clear" the old selected node, if any
 		{
-			container[leftclicked_idx].editing_content = 0;
+			container[curr_frame.selections.leftclicked].editing_content = 0;
 		}
 
 		if (idx == 0)
 		{
-			leftclicked_idx = 0; 
+			curr_frame.selections.leftclicked = 0;
 			return;
 		}
 		std::size_t new_idx = container.MoveToLastPosition(idx)->GetIdx();
-		leftclicked_idx = new_idx;
+		curr_frame.selections.leftclicked = new_idx;
 		curr_frame.just_selected_post = true;
 	}
 	
@@ -249,25 +273,24 @@ namespace sb
 		total_rect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
 		total_rect.Expand(5);
 
-		if (curr_frame.mouse.clicked)
-		{
-			ImVec2& mouse_pos = curr_frame.mouse.pos;
-			bool inner_click = total_rect.Contains(mouse_pos);
-			bool outer_click = item_rect_outer.Contains(mouse_pos);
+		ImVec2& mouse_pos = curr_frame.mouse.pos;
+		const bool mouse_inner = total_rect.Contains(mouse_pos);
+		const bool mouse_outer = item_rect_outer.Contains(mouse_pos);
 
-			if (inner_click || outer_click)
+			if (mouse_inner || mouse_outer)
 			{
+				curr_frame.hovering.post = idx;
 				
 				if (curr_frame.mouse.leftclicked)
 				{
-					curr_frame.selections.post = idx;
+					curr_frame.just_selected_post = idx;
 				}
 				else if (curr_frame.mouse.rightclicked)
 				{
-					rightclicked_idx = idx;
+					curr_frame.selections.rightclicked = idx;
 				}				
 			}
-		}
+		
 
 		#ifdef BOARD_DEBUG
 		ImGui::SameLine();
@@ -287,9 +310,9 @@ namespace sb
 
 	void BoardTab::DragSelectedPost()
 	{
-		if (leftclicked_idx == 0) return;
+		if (curr_frame.selections.leftclicked == 0) return;
 
-		Post& current_post = container[leftclicked_idx];
+		Post& current_post = container[curr_frame.selections.leftclicked];
 		auto& post_display_pos = current_post.display_pos;
 
 		if (current_post.editing_content != 0) return;
@@ -304,8 +327,6 @@ namespace sb
 
 	void BoardTab::ShowDebugWindow()
 	{
-
-		ShowColorPanel(container.board_options.color_table);
 
 		ImVec2 content_max = ImGui::GetContentRegionMax();
 		ImVec2 scroll_max = ImVec2(ImGui::GetScrollMaxX(), ImGui::GetScrollMaxY());
@@ -337,17 +358,17 @@ namespace sb
 			ImGui::Text("Drag: %1.f, %1.f", drag.x, drag.y);
 		}
 		
-		if (leftclicked_idx > 0 && curr_frame.selections.post == 0)
+		if (curr_frame.selections.leftclicked > 0)
 		{
-			const Post& post = container[leftclicked_idx];
+			const Post& post = container[curr_frame.selections.leftclicked];
 			const auto& content = post.content;
 
-			const PostRenderingInfo& post_info = posts_info[leftclicked_idx];
+			const PostRenderingInfo& post_info = posts_info[curr_frame.selections.leftclicked];
 			const ImRect& total_rect = post_info.total_rect;
 			const auto& content_rects = post_info.content_rects;
 
 			ImGui::NewLine();
-			ImGui::Text("Left clicked Post: %i", leftclicked_idx);
+			ImGui::Text("Left clicked Post: %i", curr_frame.selections.leftclicked);
 			ImGui::Text("Display Pos: %1.f, %1.f", post.display_pos.first, post.display_pos.second);
 			ImGui::Text("Rect Min: %1.f, %1.f", total_rect.Min.x, total_rect.Min.y);
 			ImGui::Text("Rect Max: %1.f, %1.f", total_rect.Max.x, total_rect.Max.y);
@@ -376,14 +397,18 @@ namespace sb
 				ImGui::Text("Currently dragging post %i", post.GetIdx());
 			}
 		}
-		if (rightclicked_idx != 0)
+		if (curr_frame.selections.rightclicked != 0)
 		{
 			ImGui::NewLine();
-			ImGui::Text("Right clicked post: %i", rightclicked_idx);
+			ImGui::Text("Right clicked post: %i", curr_frame.selections.rightclicked);
 		}
-		if (curr_frame.selections.connection > 0)
+		if (curr_frame.hovering.connection > 0)
 		{
-			ImGui::Text("Hovered connection: %i", curr_frame.selections.connection);
+			ImGui::Text("Hovered connection: %i", curr_frame.hovering.connection);
+		}
+		if (curr_frame.hovering.post > 0)
+		{
+			ImGui::Text("Hovered post: %i", curr_frame.hovering.post);
 		}
 
 		ImGui::End();
@@ -408,7 +433,7 @@ namespace sb
 
 		std::size_t hovered = 0;
 
-		const float curve_thickness = s_unit / 2;
+		const float curve_thickness = s_unit / 3;
 		const float selection_threshold = s_unit / 2;
 		const float selected_curve_thickness = 0.8f * s_unit;
 
@@ -434,14 +459,14 @@ namespace sb
 			}
 		}
 
-		if (hovered > 0 && curr_frame.selections.connection == 0)
+		if (hovered > 0 && curr_frame.hovering.connection == 0)
 		{
-			curr_frame.selections.connection = hovered;
+			curr_frame.hovering.connection = hovered;
 		}
 
-		if (curr_frame.selections.connection > 0)
+		if (curr_frame.hovering.connection > 0)
 		{
-			auto& connection = container.connections[curr_frame.selections.connection];
+			auto& connection = container.connections[curr_frame.hovering.connection];
 
 			std::size_t start_idx = connection.from;
 			std::size_t end_idx = connection.to;
@@ -471,11 +496,14 @@ namespace sb
 
 	void BoardTab::Render()
 	{
+		CommandQueueLookup();
+
 		BoardColors& color_table = container.board_options.color_table;
 
 		ImGui::PushStyleColor(ImGuiCol_ChildBg, BoardColors::ArrayToImColor(color_table.bg).operator ImVec4());
+		
 		ImGui::BeginChild("active tab", ImVec2(0, 0), false, TabChildWindowFlags);
-
+		
 		s_unit = ImGui::GetFontSize();
 		ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
@@ -525,13 +553,13 @@ namespace sb
 		{
 			if (curr_frame.new_connection.creating)
 			{
-				if (curr_frame.selections.post == 0 || curr_frame.new_connection.from == curr_frame.selections.post)
+				if (curr_frame.hovering.post == 0 || curr_frame.new_connection.from == curr_frame.hovering.post)
 				{
 					curr_frame.new_connection.Reset();
 				}
 				else
 				{
-					curr_frame.new_connection.to = curr_frame.selections.post;
+					curr_frame.new_connection.to = curr_frame.hovering.post;
 
 					container.connections.EmplaceBack(curr_frame.new_connection.from, curr_frame.new_connection.to);
 
@@ -540,14 +568,14 @@ namespace sb
 			}
 			else
 			{
-				SetSelectedPost(curr_frame.selections.post);
+				SetSelectedPost(curr_frame.just_selected_post);
 			}
 			
 		}
 
-		if (curr_frame.mouse.doubleclicked && leftclicked_idx > 0)
+		if (curr_frame.mouse.doubleclicked && curr_frame.selections.leftclicked > 0)
 		{
-			StartEditingPost(container[leftclicked_idx], posts_info[leftclicked_idx].content_rects, curr_frame.mouse.pos);
+			StartEditingPost(container[curr_frame.selections.leftclicked], posts_info[curr_frame.selections.leftclicked].content_rects, curr_frame.mouse.pos);
 		}
 
 		if (curr_frame.mouse.rightclicked)
@@ -556,20 +584,22 @@ namespace sb
 			{
 				curr_frame.new_connection.Reset();
 			}
-			if (curr_frame.selections.connection == 0)
+			if (curr_frame.hovering.post > 0)
 			{
-				if (rightclicked_idx == 0)
+				if (container[curr_frame.hovering.post].editing_content == 0)
 				{
-					ImGui::OpenPopup("add post");
-				}
-				else
-				{
+					curr_frame.selections.rightclicked = curr_frame.hovering.post;
 					ImGui::OpenPopup("edit post");
 				}
+				
+			}
+			else if (curr_frame.hovering.connection > 0)
+			{
+				ImGui::OpenPopup("remove connection");
 			}
 			else
 			{
-				ImGui::OpenPopup("remove connection");
+				ImGui::OpenPopup("add post");
 			}
 		}
 
@@ -577,15 +607,15 @@ namespace sb
 		{
 			if (ImGui::MenuItem("Remove connection"))
 			{
-				auto to_remove = container.connections.IteratorFromIndex(curr_frame.selections.connection);
+				auto to_remove = container.connections.IteratorFromIndex(curr_frame.hovering.connection);
 				container.connections.Erase(to_remove);
-				curr_frame.selections.connection = 0;
+				curr_frame.hovering.connection = 0;
 			}
 			ImGui::EndPopup();
 		}
 		else
 		{
-			curr_frame.selections.connection = 0;
+			curr_frame.hovering.connection = 0;
 		}
 
 		if (ImGui::BeginPopup("add post"))
@@ -596,6 +626,7 @@ namespace sb
 			{
 				Post& new_post = *container.CreatePostBack();
 				new_post.display_pos = { mouse_pos.x, mouse_pos.y };
+				curr_frame.selections.leftclicked = 0;
 			}
 			ImGui::EndPopup();
 		}
@@ -603,25 +634,55 @@ namespace sb
 		if (ImGui::BeginPopup("edit post"))
 		{
 			const ImVec2 mouse_pos = ImGui::GetMousePosOnOpeningCurrentPopup();
-			Post& post = container[rightclicked_idx];
+			Post& post = container[curr_frame.selections.rightclicked];
 
 			if (ImGui::MenuItem("Edit Post"))
 			{
-
+				curr_frame.popups.edit_post = true;
 			}
+
 			if (ImGui::MenuItem("Remove Post"))
 			{// TODO: confirmation of deletion
-				container.Erase(container.IteratorFromIndex(rightclicked_idx));
-				rightclicked_idx = 0;
+				container.Erase(container.IteratorFromIndex(curr_frame.selections.rightclicked));
+				curr_frame.selections.rightclicked = 0;
 			}
 			if (ImGui::MenuItem("Connect to..."))
 			{
 				curr_frame.new_connection.creating = true;
-				curr_frame.new_connection.from = rightclicked_idx;
+				curr_frame.new_connection.from = curr_frame.selections.rightclicked;
 			}
 
 			ImGui::EndPopup();
 			
+		}
+		else
+		{
+			//curr_frame.selections.rightclicked = 0;
+		}
+
+		if (curr_frame.popups.edit_post)
+		{
+			ImGui::Begin("Edit post", &curr_frame.popups.edit_post, PopupWindowFlags);
+
+			if (curr_frame.selections.rightclicked == 0)
+			{
+				curr_frame.popups.edit_post = false;
+				ImGui::End();
+			}
+			else
+			{
+				Post& post = container[curr_frame.selections.rightclicked];
+
+				ImGui::Text(post.content[1].AsString().data());
+
+				ImGui::End();
+			}
+
+		}
+
+		if (curr_frame.popups.color_panel)
+		{
+			ShowColorPanel(container.board_options.color_table, &curr_frame.popups.color_panel);
 		}
 
 		last_frame_info.scroll_max_x = ImGui::GetScrollMaxX();
