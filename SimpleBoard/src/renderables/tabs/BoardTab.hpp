@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <optional> 
 
 #include "imgui_internal.h" //for ImRect
 
@@ -69,8 +70,34 @@ namespace sb
 
             struct Popups
             {
-                bool edit_post = false;
-                bool color_panel = false;
+                struct EditingPost
+                {
+                public:
+                    bool Open() { return open; }
+                    bool NeedsRefresh() { return cache_needs_refresh; }
+                    void WillRefresh(bool var) { cache_needs_refresh = var; }
+                    void Refresh(const Post& to_cache)
+                    {
+                        cached_post.emplace(to_cache);
+                        WillRefresh(false);
+                    }
+                    void SetOpen(bool var)
+                    {
+                        WillRefresh(true);
+                        open = var;
+                    }
+                    const Post& CachedPost() { return *cached_post; }
+                private:
+                    bool open = false;
+                    bool cache_needs_refresh = true;
+                    std::optional<Post> cached_post;
+                }editing_post;
+
+                struct TableOptions
+                {
+                    bool open = false;
+                }table_options;
+                
             }popups;
 
             struct Selections

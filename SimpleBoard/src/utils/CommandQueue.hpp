@@ -13,7 +13,7 @@ namespace sb
 	public:
 		enum class commands
 		{
-			openFile, closeAllTabs, createErrorWindow, openColorPanel
+			openFile, closeAllTabs, createErrorWindow, openBoardOptions
 		};
 		enum class targets 
 		{

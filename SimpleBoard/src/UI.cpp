@@ -85,9 +85,9 @@ namespace sb
         if (NoTab) ImGui::BeginDisabled();
         if (ImGui::BeginMenu("View"))
         {
-            if (ImGui::MenuItem("Color Table"))
+            if (ImGui::MenuItem("Board Display Options"))
             {
-                CommandQueue::addToQueue(CommandQueue::targets::currentTab, CommandQueue::commands::openColorPanel);
+                CommandQueue::addToQueue(CommandQueue::targets::currentTab, CommandQueue::commands::openBoardOptions);
             }
             ImGui::EndMenu();
         }

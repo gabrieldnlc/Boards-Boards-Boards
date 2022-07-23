@@ -10,6 +10,8 @@
 #include "utils/CommandQueue.hpp"
 #include "utils/Error.hpp"
 
+#include <iostream>
+
 using utils::BoardColors;
 using utils::CubicBezier;
 using utils::GetCubicBezier;
@@ -189,6 +191,25 @@ namespace sb
 		ImGui::End();
 	}
 
+	void AlignButtonsRight(std::size_t num_buttons, float button_width)
+	{
+		const float offset = 10.f;
+		float avail_x = ImGui::GetWindowContentRegionMax().x;
+
+		float pos;
+		if (num_buttons == 1)
+		{
+			pos = (avail_x - button_width);
+		}
+		else
+		{
+			pos = avail_x;
+			pos -= (button_width * num_buttons);
+			pos -= (ImGui::GetStyle().ItemSpacing.x * num_buttons);
+		}
+		ImGui::SetCursorPosX(pos);
+	}
+
 	void BoardTab::CommandQueueLookup()
 	{
 		while (!CommandQueue::empty(CommandQueue::targets::currentTab))
@@ -199,8 +220,8 @@ namespace sb
 
 			switch (command)
 			{
-			case (CommandQueue::commands::openColorPanel):
-				curr_frame.popups.color_panel = true;
+			case (CommandQueue::commands::openBoardOptions):
+				curr_frame.popups.table_options.open = true;
 				break;
 			default:
 				throw utils::CommandQueueError("Current Tab received unknown command.");
@@ -228,6 +249,8 @@ namespace sb
 		std::size_t new_idx = container.MoveToLastPosition(idx)->GetIdx();
 		curr_frame.selections.leftclicked = new_idx;
 		curr_frame.just_selected_post = true;
+
+		curr_frame.popups.editing_post.WillRefresh(true);
 	}
 	
 	void BoardTab::RenderPost(Post& post)
@@ -549,8 +572,13 @@ namespace sb
 		ImGui::ShowMetricsWindow();
 		#endif
 
-		if (curr_frame.mouse.leftclicked)
+		if (curr_frame.mouse.leftclicked && ImGui::IsWindowHovered())
 		{
+			if (!ImGui::IsPopupOpen("right click on post"))
+			{
+				curr_frame.selections.rightclicked = 0;
+			}
+
 			if (curr_frame.new_connection.creating)
 			{
 				if (curr_frame.hovering.post == 0 || curr_frame.new_connection.from == curr_frame.hovering.post)
@@ -569,6 +597,7 @@ namespace sb
 			else
 			{
 				SetSelectedPost(curr_frame.just_selected_post);
+				
 			}
 			
 		}
@@ -589,7 +618,8 @@ namespace sb
 				if (container[curr_frame.hovering.post].editing_content == 0)
 				{
 					curr_frame.selections.rightclicked = curr_frame.hovering.post;
-					ImGui::OpenPopup("edit post");
+					ImGui::OpenPopup("right click on post");
+					curr_frame.popups.editing_post.SetOpen(false);
 				}
 				
 			}
@@ -631,14 +661,14 @@ namespace sb
 			ImGui::EndPopup();
 		}
 
-		if (ImGui::BeginPopup("edit post"))
+		if (ImGui::BeginPopup("right click on post"))
 		{
 			const ImVec2 mouse_pos = ImGui::GetMousePosOnOpeningCurrentPopup();
 			Post& post = container[curr_frame.selections.rightclicked];
 
 			if (ImGui::MenuItem("Edit Post"))
 			{
-				curr_frame.popups.edit_post = true;
+				curr_frame.popups.editing_post.SetOpen(true);
 			}
 
 			if (ImGui::MenuItem("Remove Post"))
@@ -660,29 +690,114 @@ namespace sb
 			//curr_frame.selections.rightclicked = 0;
 		}
 
-		if (curr_frame.popups.edit_post)
+		if (curr_frame.popups.editing_post.Open())
 		{
-			ImGui::Begin("Edit post", &curr_frame.popups.edit_post, PopupWindowFlags);
+			auto& vars = curr_frame.popups.editing_post;
+			bool open = true;
 
 			if (curr_frame.selections.rightclicked == 0)
 			{
-				curr_frame.popups.edit_post = false;
-				ImGui::End();
+				vars.SetOpen(false);
 			}
 			else
 			{
 				Post& post = container[curr_frame.selections.rightclicked];
 
-				ImGui::Text(post.content[1].AsString().data());
+				bool default_color = !post.HasColor();
+
+				if (vars.NeedsRefresh())
+				{
+					vars.Refresh(post);
+				}
+
+				ImGui::Begin("Edit post", &open, PopupWindowFlags);
+
+				ImGui::Text("Content: ");
+				ImGui::SameLine();
+
+				ImGui::BeginGroup();
+
+				for (auto& content : post.content)
+				{
+					switch (content.GetType())
+					{
+					case ContentType::text:
+						ImGui::PushID((void*)&content.AsString());
+
+						ImGui::InputTextMultiline("", &content.AsString());
+
+						ImGui::PopID();
+						break;
+					default:
+						ImGui::Text("Image support is WIP.");
+					}
+				}
+
+				ImGui::EndGroup();
+
+				ImGui::NewLine();
+
+				if (ImGui::Checkbox("Use default color", &default_color))
+				{
+					if (!default_color)
+					{
+						post.color[0] = color_table.RGBIntToFloat(84);
+						post.color[1] = color_table.RGBIntToFloat(84);
+						post.color[2] = color_table.RGBIntToFloat(84);
+					}
+					else
+					{
+						post.color[0] = -1.f;
+						post.color[1] = -1.f;
+						post.color[2] = -1.f;
+					}
+				}
+
+				if (default_color)
+				{
+					ImGui::BeginDisabled();
+				}
+				ImGui::PushID((void*)&post.color);
+				ImGui::ColorEdit3("", post.color);
+				ImGui::PopID();
+
+				if (default_color)
+				{
+					ImGui::EndDisabled();
+				}
+
+				ImGui::Separator();
+
+				const ImVec2 cancel_size = ImGui::CalcTextSize("Cancel") * 1.5;
+
+				AlignButtonsRight(2, cancel_size.x);
+
+				if (ImGui::Button("Cancel", cancel_size))
+				{
+					post = vars.CachedPost();
+					vars.SetOpen(false);
+				}
+				ImGui::SameLine();
+
+				if (ImGui::Button("OK", cancel_size))
+				{
+					vars.SetOpen(false);
+				}
+
+				if (!open)
+				{
+					post = vars.CachedPost();
+					vars.SetOpen(false); 
+				}
 
 				ImGui::End();
 			}
 
 		}
 
-		if (curr_frame.popups.color_panel)
+		if (curr_frame.popups.table_options.open)
 		{
-			ShowColorPanel(container.board_options.color_table, &curr_frame.popups.color_panel);
+			ShowColorPanel(container.board_options.color_table, &curr_frame.popups.table_options.open);
 		}
 
 		last_frame_info.scroll_max_x = ImGui::GetScrollMaxX();

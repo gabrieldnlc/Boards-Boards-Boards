@@ -17,7 +17,8 @@ using sb::PostContainer;
 using utils::BoardParser;
 using utils::LuaStack;
 
-const string tag = "[PostContainer]";
+const string tag = "[Post]";
+const string tag2 = "[PostContainer]";
 
 auto AreIndexesValid = [](PostContainer& c) -> bool
 {
@@ -28,7 +29,52 @@ auto AreIndexesValid = [](PostContainer& c) -> bool
 	return true;
 };
 
-SCENARIO("Overload resolution regarding CreatePost/Back and Insert and their r-value overloads is correct", tag)
+SCENARIO("Post.HasColor() reports correctly", tag)
+{
+	GIVEN("A default constructed Post")
+	{
+		Post post;
+		THEN("It has no color")
+		{
+			REQUIRE_FALSE(post.HasColor());
+		}
+		
+		WHEN("Not all 3 color fields are >= 0")
+		{
+			THEN("HasColor() still returns false")
+			{
+				post.color[0] = 2.f;
+				REQUIRE_FALSE(post.HasColor());
+				post.color[1] = 3.f;
+				REQUIRE_FALSE(post.HasColor());
+			}
+		}
+
+		WHEN("All 3 color fields are >= 0")
+		{
+			post.color[0] = 2.f;
+			post.color[1] = 3.f;
+			post.color[2] = 5.f;
+
+			THEN("HasColor() returns true")
+			{
+				REQUIRE(post.HasColor());
+			}
+			AND_WHEN("One of the color fields is changed")
+			{
+				REQUIRE(post.HasColor());
+				THEN("HasColor() returns false")
+				{
+					post.color[1] = -1.f;
+					REQUIRE_FALSE(post.HasColor());
+				}
+				
+			}
+		}
+	}
+}
+
+SCENARIO("Overload resolution regarding CreatePost/Back and Insert and their r-value overloads is correct", tag2)
 {
 	GIVEN("A default constructed PostContainer")
 	{
@@ -73,7 +119,7 @@ SCENARIO("Overload resolution regarding CreatePost/Back and Insert and their r-v
 	}
 }
 
-SCENARIO("IteratorFromIndex returns valid iterators or throws on invalid indexes", tag)
+SCENARIO("IteratorFromIndex returns valid iterators or throws on invalid indexes", tag2)
 {
 	GIVEN("A default constructed PostContainer")
 	{
@@ -118,7 +164,7 @@ SCENARIO("IteratorFromIndex returns valid iterators or throws on invalid indexes
 	}
 }
 
-SCENARIO("Creating Post in-place works", tag)
+SCENARIO("Creating Post in-place works", tag2)
 {
 	GIVEN("A default constructed PostContainer")
 	{
@@ -142,7 +188,7 @@ SCENARIO("Creating Post in-place works", tag)
 	}
 }
 
-SCENARIO("Erasing posts updates container's contents indexes", tag)
+SCENARIO("Erasing posts updates container's contents indexes", tag2)
 {
 	GIVEN("A PostContainer with some posts, some of which have links")
 	{
@@ -255,7 +301,7 @@ board_config = {bg_color = {30, 30, 30}}
 	}
 }
 
-SCENARIO("Calling MoveToLastPosition correctly adjusts indexes", tag)
+SCENARIO("Calling MoveToLastPosition correctly adjusts indexes", tag2)
 {
 	GIVEN("A PostContainer populated with nodes that hold connections")
 	{
@@ -355,7 +401,7 @@ board_config = {bg_color = {30, 30, 30}}
 	}
 }
 
-SCENARIO("Any change on the order of the container's elements is reflected on their indexes", tag)
+SCENARIO("Any change on the order of the container's elements is reflected on their indexes", tag2)
 {
 	GIVEN("A PostContainer holding some posts")
 	{
@@ -457,7 +503,7 @@ board_config = {bg_color = {30, 30, 30}}
 	}
 }
 
-SCENARIO("Comparisons using operator== are reliable", tag)
+SCENARIO("Comparisons using operator== are reliable", tag2)
 {
 	GIVEN("two PostContainers")
 	{
@@ -479,7 +525,7 @@ SCENARIO("Comparisons using operator== are reliable", tag)
 	}
 }
 
-SCENARIO("Empty() is reliable", tag)
+SCENARIO("Empty() is reliable", tag2)
 {
 	GIVEN("A default constructed PostContainer")
 	{
@@ -517,7 +563,7 @@ SCENARIO("Empty() is reliable", tag)
 	}
 }
 
-SCENARIO("The resizing operation works to specifications", tag)
+SCENARIO("The resizing operation works to specifications", tag2)
 {
 	GIVEN("A default constructed PostContainer")
 	{

@@ -47,6 +47,11 @@ namespace sb
 		void SetIdx(std::size_t new_idx) { Idx = new_idx; }
 
 		void IndexShift(int offset) { Idx += offset; }
+
+		bool HasColor()
+		{
+			return (color[0] >= 0 && color[1] >= 0 && color[2] >= 0);
+		}
 		
 		LuaVector<PostContent> content;
 		std::size_t editing_content = 0;
