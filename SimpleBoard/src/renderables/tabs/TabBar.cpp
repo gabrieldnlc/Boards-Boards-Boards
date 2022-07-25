@@ -20,6 +20,15 @@ namespace sb
     {
         try
         {
+            for (int i = 0; i < tabs.size(); i++)
+            {
+                auto& tab = tabs[i];
+                if (tab.path.fullData() == path)
+                {
+                    change_to = i;
+                    return;
+                }
+            }
             sol::table t = LuaStack::TableFromFile(path);
             PostContainer container = BoardParser().Parse(t);
             BoardTab new_tab(std::move(container), path);
@@ -56,6 +65,7 @@ namespace sb
                 NewBoardTab();
             }
             int count = -1;
+            active_tab = -1;
             for (auto it = std::begin(tabs); it != std::end(tabs); it++)
             {
                 count++;
@@ -76,10 +86,7 @@ namespace sb
                     tab.Render();
                     ImGui::EndTabItem();
 
-                    if (active_tab != count)
-                    {
-                        active_tab = count;
-                    }
+                    active_tab = count;
                 }
             }
 

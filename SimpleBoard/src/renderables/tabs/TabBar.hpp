@@ -26,9 +26,10 @@ namespace sb
 		using BoardIt = std::vector<BoardTab>::iterator;
 		std::vector<BoardIt> to_delete;
 
+		
 		bool hasActiveTab() { return active_tab >= 0; }
 
-		//TODO documentation that if !hasActiveTab() using the reference will be undefined behavior
+		// - Will throw if !hasActiveTab()
 		BoardTab& getActiveTab()
 		{
 			return (*(std::next(std::begin(tabs), active_tab)));

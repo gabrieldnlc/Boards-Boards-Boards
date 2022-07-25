@@ -92,8 +92,15 @@ namespace sb
         }
 
         // Setup window
+        
+        
+#ifdef BOARD_DEBUG
+        const std::string window_title = "Simple Board (SDL + DX11)";
+#else
+        const std::string window_title = "Simple Board";
+#endif
         SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
-        SDL_Window* window = SDL_CreateWindow("Simple Board (SDL + DX11)", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, window_flags);
+        SDL_Window* window = SDL_CreateWindow(window_title.data(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, window_flags);
         SDL_SysWMinfo wmInfo;
         SDL_VERSION(&wmInfo.version);
         SDL_GetWindowWMInfo(window, &wmInfo);

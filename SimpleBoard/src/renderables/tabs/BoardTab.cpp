@@ -24,84 +24,47 @@ namespace sb
 	BoardTab::BoardTab(PostContainer&& container, string path) : container(std::move(container)), Widget(path), path(std::move(path)), posts_info(true) {}
 	BoardTab::BoardTab(const PostContainer& container, string path) : container(container), Widget(path), path(std::move(path)), posts_info(true) {}
 
-	void RenderText(Post& post, std::size_t content_idx, std::pair<ImRect, ImRect>& content_rects)
+	
+	void RenderText(Post& post, std::size_t content_idx, std::pair<ImRect, ImRect>& content_rects, BoardColors& colors, float s_unit)
 	{
 		PostContent& content = post.content[content_idx];
+
+		const std::string empty_post = "Double click here";
 		auto& text = content.AsString();
-		const bool is_editing = content_idx == post.editing_content;
+		auto& string = (text.empty() ? empty_post : text);
+		
+		const bool is_editing = post.editing_content == content_idx;
+		auto& bg_color = (post.HasColor() ? post.color : colors.post);
+		auto& text_color = (is_editing ? bg_color : colors.text);
 
-		auto& displaying_rect = content_rects.first;
-		auto& editing_rect = content_rects.second;
-		bool editing_rect_empty = editing_rect.GetWidth() <= 0;
+		auto pos = ImGui::GetCursorPos();
 
-		if (is_editing)
-		{
-			if (editing_rect_empty)
-			{
-				editing_rect = displaying_rect;
-				editing_rect.Expand(ImVec2(10, 16));
-			}
-			void* ptr = &text;
-			ImGui::PushID(ptr);
+		ImGui::TextColored(colors.ArrayToImColor(text_color), string.data());
 
-			auto saved_pos = ImGui::GetCursorPos();
-			if (ImGui::InputTextMultiline("", &text, editing_rect.GetSize()))
-			{
-				auto pos_after_input = ImGui::GetCursorPos();
-				ImGui::SetCursorPos(saved_pos);
-				ImGui::TextColored(ImColor(0, 0, 0, 0), (text.empty() ? "Double-click to edit" : text.data()));
-				
-				ImGui::SetCursorPos(pos_after_input);
+		ImRect text_rect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
+		content_rects.first = text_rect;
 
-				ImRect new_rect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
-				editing_rect = new_rect;
-				if (!text.empty())
-				{
-					if (text.back() == '\n')
-					{
-						editing_rect.Expand(ImVec2(10, 16));
-					}
-					else
-					{
-						editing_rect.Expand(ImVec2(10, 16));
-					}
-				}
-				
-				
+		if (!is_editing) return;
 
-			}
-			ImGui::PopID();
-			return;
-		}
-		else
-		{
-			if (text.empty())
-			{
-				ImGui::Text("Double-click to edit");
-			}
-			else
-			{
-				ImGui::Text(text.data());
-			}
-			displaying_rect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
+		ImGui::SetCursorPos(pos);
 
-			if (!editing_rect_empty)
-			{
-				editing_rect = ImRect();
-			}
+		ImRect edit_rect = text_rect;
+		edit_rect.Expand(s_unit * 2);
+		
+		ImGui::PushID((void*)&content);
+		ImGui::InputTextMultiline("", &text, edit_rect.GetSize());
+		ImGui::PopID();
 
-			return;
-		}
-				
+		content_rects.second = edit_rect;
 	}
-
-	void RenderContent(Post& post, std::size_t content_idx, std::pair<ImRect, ImRect>& content_rects)
+	
+	void RenderContent(Post& post, std::size_t content_idx, std::pair<ImRect, ImRect>& content_rects, BoardColors& colors, float s_unit)
 	{
 		PostContent& content = post.content[content_idx];
 		switch (content.GetType())
 		{
 		case(ContentType::text):
-			RenderText(post, content_idx, content_rects);
+			RenderText(post, content_idx, content_rects, colors, s_unit);
 			break;
 		default:
 			ImGui::Text("UNKNOWN CONTENT TYPE");
@@ -131,7 +94,7 @@ namespace sb
 
 	void ShowColorPanel(utils::BoardColors& color_table, bool* is_open = NULL)
 	{
-		float y_pos[4];
+		float y_pos[5];
 		float x_pos = 0;
 
 		ImGui::Begin("Color Panel", is_open, PopupWindowFlags);
@@ -139,6 +102,7 @@ namespace sb
 		auto& bg = color_table.bg;
 		auto& connection = color_table.connection;
 		auto& selected_connection = color_table.selected_connection;
+		auto& text = color_table.text;
 
 		
 		ImGui::Text("Posts:"); ImGui::SameLine();
@@ -168,6 +132,13 @@ namespace sb
 		ImGui::NewLine();
 		ImGui::NewLine();
 
+
+		ImGui::Text("Text:"); ImGui::SameLine();
+		if (ImGui::GetCursorPosX() > x_pos) x_pos = ImGui::GetCursorPosX();
+		y_pos[4] = ImGui::GetCursorPosY();
+		ImGui::NewLine();
+		ImGui::NewLine();
+
 		ImGui::PushID((void*)&post);
 		ImGui::SetCursorPos(ImVec2(x_pos, y_pos[0]));
 		ImGui::ColorEdit3("", &post[0]);
@@ -186,6 +157,11 @@ namespace sb
 		ImGui::PushID((void*)&selected_connection);
 		ImGui::SetCursorPos(ImVec2(x_pos, y_pos[3]));
 		ImGui::ColorEdit3("", &selected_connection[0]);
+		ImGui::PopID();
+
+		ImGui::PushID((void*)&text);
+		ImGui::SetCursorPos(ImVec2(x_pos, y_pos[4]));
+		ImGui::ColorEdit3("", &text[0]);
 		ImGui::PopID();
 
 		ImGui::End();
@@ -288,7 +264,7 @@ namespace sb
 		{
 			auto& content_rects = posts_info[idx].content_rects[i];
 			if (i > 1) ImGui::NewLine();
-			RenderContent(post, i, content_rects);			
+			RenderContent(post, i, content_rects, color_table, s_unit);			
 		}
 
 		ImGui::EndGroup();
@@ -510,6 +486,8 @@ namespace sb
 			ImVec2 from = GetRectCenter(post_rect);
 			ImVec2 to = curr_frame.mouse.pos;
 
+			draw_list->ChannelsSetCurrent(1);
+
 			CubicBezier bezier = GetCubicBezier(from, to);
 
 			DrawCubicBezier(bezier, colors.ArrayToImColor(colors.connection), curve_thickness);
@@ -625,15 +603,15 @@ namespace sb
 			}
 			else if (curr_frame.hovering.connection > 0)
 			{
-				ImGui::OpenPopup("remove connection");
+				ImGui::OpenPopup("right click on connection");
 			}
 			else
 			{
-				ImGui::OpenPopup("add post");
+				ImGui::OpenPopup("right click on blank");
 			}
 		}
 
-		if (ImGui::BeginPopup("remove connection"))
+		if (ImGui::BeginPopup("right click on connection"))
 		{
 			if (ImGui::MenuItem("Remove connection"))
 			{
@@ -648,7 +626,7 @@ namespace sb
 			curr_frame.hovering.connection = 0;
 		}
 
-		if (ImGui::BeginPopup("add post"))
+		if (ImGui::BeginPopup("right click on blank"))
 		{
 			const ImVec2 mouse_pos = ImGui::GetMousePosOnOpeningCurrentPopup();
 
@@ -675,6 +653,7 @@ namespace sb
 			{// TODO: confirmation of deletion
 				container.Erase(container.IteratorFromIndex(curr_frame.selections.rightclicked));
 				curr_frame.selections.rightclicked = 0;
+				curr_frame.selections.leftclicked = 0;
 			}
 			if (ImGui::MenuItem("Connect to..."))
 			{
@@ -693,6 +672,7 @@ namespace sb
 		if (curr_frame.popups.editing_post.Open())
 		{
 			auto& vars = curr_frame.popups.editing_post;
+			
 			bool open = true;
 
 			if (curr_frame.selections.rightclicked == 0)
@@ -757,9 +737,51 @@ namespace sb
 				{
 					ImGui::BeginDisabled();
 				}
+				ImGui::BeginGroup();
+
 				ImGui::PushID((void*)&post.color);
-				ImGui::ColorEdit3("", post.color);
+
+				ImGuiColorEditFlags flags = ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_NoSmallPreview;
+				if (default_color)
+				{
+					flags |= ImGuiColorEditFlags_NoInputs;
+				}
+				else
+				{
+					flags |= ImGuiColorEditFlags_DisplayRGB;
+				}
+
+				ImGui::ColorPicker3("", post.color, flags);
 				ImGui::PopID();
+
+
+				/*  Palette colors  */
+
+				const int colors_per_row = 8;
+				const ImVec2 color_size = ImVec2(s_unit * 1.5f, s_unit * 1.5f);
+				const auto& palette = color_table.palette;
+
+				for (int n = 0; n < IM_ARRAYSIZE(palette); n++)
+				{
+					ImGui::PushID(n);
+					if ((n % colors_per_row) != 0)
+					{
+						ImGui::SameLine(0.0f, ImGui::GetStyle().ItemSpacing.y);
+					}
+						
+					const ImGuiColorEditFlags flags = ImGuiColorEditFlags_NoAlpha | ImGuiColorEditFlags_NoPicker | ImGuiColorEditFlags_NoTooltip;
+					if (ImGui::ColorButton("##palette", palette[n], flags, color_size))
+					{
+						post.color[0] = palette[n].x;
+						post.color[1] = palette[n].y;
+						post.color[2] = palette[n].z;
+					}
+					ImGui::PopID();
+				}
+
+				/*  Palette colors  */
+				
+				ImGui::EndGroup();
 
 				if (default_color)
 				{

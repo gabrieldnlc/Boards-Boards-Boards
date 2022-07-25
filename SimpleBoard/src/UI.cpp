@@ -75,17 +75,19 @@ namespace sb
             {
                 ImGui::EndDisabled();
             }
+            #ifdef BOARD_DEBUG
             if (ImGui::MenuItem("Test Errors"))
             {
                 widgets.NewErrorPrompt("Didn't work.");
             }
+            #endif
             ImGui::EndMenu();
         }
 
         if (NoTab) ImGui::BeginDisabled();
         if (ImGui::BeginMenu("View"))
         {
-            if (ImGui::MenuItem("Board Display Options"))
+            if (ImGui::MenuItem("Color Table"))
             {
                 CommandQueue::addToQueue(CommandQueue::targets::currentTab, CommandQueue::commands::openBoardOptions);
             }

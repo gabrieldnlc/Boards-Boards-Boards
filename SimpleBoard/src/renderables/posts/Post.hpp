@@ -29,17 +29,13 @@ namespace sb
 
 		bool operator== (const Post& another_post) const
 		{
-			bool same_content = content == another_post.content;
-			bool same_tags = tags == another_post.tags;
-			bool same_display_pos = display_pos == another_post.display_pos;
-			bool same_color = (color[0] == another_post.color[0]) && (color[1] == another_post.color[1]) && (color[2] == another_post.color[2]);
+			const bool same_content = content == another_post.content;
+			const bool same_tags = tags == another_post.tags;
+			const bool same_display_pos = display_pos == another_post.display_pos;
+			const bool same_color = (color[0] == another_post.color[0]) && (color[1] == another_post.color[1]) && (color[2] == another_post.color[2]);
 
 			return (same_content && same_tags && same_display_pos && same_color);
 
-			/*
-			return (content == another_post.content) && (tags == another_post.tags) &&
-				(display_pos == another_post.display_pos) && (color == another_post.color);
-				*/
 		}
 
 		std::size_t GetIdx() const { return Idx; }

@@ -204,6 +204,17 @@ namespace utils
 				color[1] = BoardColors::RGBIntToFloat(sel_connection_color[2]);
 				color[2] = BoardColors::RGBIntToFloat(sel_connection_color[3]);
 			}
+
+			sol::object text = board_config["text_color"];
+
+			if (text.valid())
+			{
+				auto& color = color_table.text;
+				sol::table text_color = text;
+				color[0] = BoardColors::RGBIntToFloat(text_color[1]);
+				color[1] = BoardColors::RGBIntToFloat(text_color[2]);
+				color[2] = BoardColors::RGBIntToFloat(text_color[3]);
+			}
 		}
 
 		sol::object connections = table["connections"];
@@ -290,6 +301,7 @@ namespace utils
 		board_config["post_color"] = LuaStack::EmptyTable();
 		board_config["connection_color"] = LuaStack::EmptyTable();
 		board_config["selected_connection_color"] = LuaStack::EmptyTable();
+		board_config["text_color"] = LuaStack::EmptyTable();
 		
 		auto& bg_color = color_table.bg;
 		board_config["bg_color"][1] = color_table.RGBFloatToInt(bg_color[0]);
@@ -310,6 +322,11 @@ namespace utils
 		board_config["selected_connection_color"][1] = color_table.RGBFloatToInt(sel_connection_color[0]);
 		board_config["selected_connection_color"][2] = color_table.RGBFloatToInt(sel_connection_color[1]);
 		board_config["selected_connection_color"][3] = color_table.RGBFloatToInt(sel_connection_color[2]);
+
+		auto& text_color = color_table.text;
+		board_config["text_color"][1] = color_table.RGBFloatToInt(text_color[0]);
+		board_config["text_color"][2] = color_table.RGBFloatToInt(text_color[1]);
+		board_config["text_color"][3] = color_table.RGBFloatToInt(text_color[2]);
 
 		sol::table connections = LuaStack::EmptyTable();
 		for (const PostContainer::PostConnection& connection : container.connections)

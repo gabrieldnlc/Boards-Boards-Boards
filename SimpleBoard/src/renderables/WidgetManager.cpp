@@ -47,7 +47,7 @@ namespace sb
 	void WidgetManager::NewErrorPrompt(const std::string& what) 
 	{
 		curr_window_id++;
-		ImGui::SetNextWindowFocus(); //TODO-FIXME this causes error windows to close current popup
+		ImGui::SetNextWindowFocus();
 		errors.emplace_back(std::make_unique<ErrorPrompt>(what, "Error##" + std::to_string(curr_window_id)));
 		#ifdef BOARD_DEBUG
 		std::cout << "Current Windows ID: " << curr_window_id << '\n';
