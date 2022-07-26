@@ -104,6 +104,7 @@ xcopy /Q /E /Y /I scripts ..\bin\Release-windows-x86\$(ProjectName)\scripts</Com
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.hpp" />
+    <ClInclude Include="src\fonts\fonts.h" />
     <ClInclude Include="src\UI.hpp" />
     <ClInclude Include="src\containers\LuaVector.hpp" />
     <ClInclude Include="src\containers\PostContainer.hpp" />

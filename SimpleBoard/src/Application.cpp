@@ -14,17 +14,13 @@
 
 #include "Application.hpp"
 #include "utils/LuaStack.hpp"
+#include "fonts/fonts.h"
 
 namespace sb
 {
 	int Application::Start()
 	{
-// Dear ImGui: standalone example application for SDL2 + DirectX 11
-// (SDL is a cross-platform general purpose library for handling windows, inputs, OpenGL/Vulkan/Metal graphics context creation, etc.)
-// If you are new to Dear ImGui, read documentation from the docs/ folder + read the top of imgui.cpp.
-// Read online: https://github.com/ocornut/imgui/tree/master/docs
-
-// Data
+        // - Mostly boilerplate code from imgui
 		static ID3D11Device* g_pd3dDevice = NULL;
 		static ID3D11DeviceContext* g_pd3dDeviceContext = NULL;
 		static IDXGISwapChain* g_pSwapChain = NULL;
@@ -44,7 +40,6 @@ namespace sb
         };
         auto CreateDeviceD3D = [&](HWND hWnd)
         {
-            // Setup swap chain
             DXGI_SWAP_CHAIN_DESC sd;
             ZeroMemory(&sd, sizeof(sd));
             sd.BufferCount = 2;
@@ -62,7 +57,6 @@ namespace sb
             sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
             UINT createDeviceFlags = 0;
-            //createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
             D3D_FEATURE_LEVEL featureLevel;
             const D3D_FEATURE_LEVEL featureLevelArray[2] = { D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_0, };
             if (D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, createDeviceFlags, featureLevelArray, 2, D3D11_SDK_VERSION, &sd, &g_pSwapChain, &g_pd3dDevice, &featureLevel, &g_pd3dDeviceContext) != S_OK)
@@ -83,8 +77,6 @@ namespace sb
         sb::WidgetManager widgets;
 
         // Setup SDL
-        // (Some versions of SDL before <2.0.10 appears to have performance/stalling issues on a minority of Windows systems,
-        // depending on whether SDL_INIT_GAMECONTROLLER is enabled or disabled.. updating to latest version of SDL is recommended!)
         if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)
         {
             printf("Error: %s\n", SDL_GetError());
@@ -118,45 +110,20 @@ namespace sb
         ImGui::CreateContext();
         ImGuiIO& io = ImGui::GetIO(); (void)io;
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
-        //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-        //io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
-        //io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
-        //io.ConfigViewportsNoAutoMerge = true;
-        //io.ConfigViewportsNoTaskBarIcon = true;
 
         // Setup Dear ImGui style
         ImGui::StyleColorsDark();
-        //ImGui::StyleColorsClassic();
 
-        // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
+        
         ImGuiStyle& style = ImGui::GetStyle();
         style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0, 0, 0, 0); //disabling the BG dimming when opening a modal window
         style.Colors[ImGuiCol_WindowBg] = ImColor(61, 61, 61);
-
-        //if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-        //{
-        //    style.WindowRounding = 0.0f;
-        //    style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-        //}
 
         // Setup Platform/Renderer backends
         ImGui_ImplSDL2_InitForD3D(window);
         ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext);
 
-        // Load Fonts
-        // - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
-        // - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
-        // - If the file cannot be loaded, the function will return NULL. Please handle those errors in your application (e.g. use an assertion, or display an error and quit).
-        // - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
-        // - Read 'docs/FONTS.md' for more instructions and details.
-        // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
-        //io.Fonts->AddFontDefault();
-        //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
-        //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
-        //io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
-        //io.Fonts->AddFontFromFileTTF("../../misc/fonts/ProggyTiny.ttf", 10.0f);
-        //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
-        //IM_ASSERT(font != NULL);
+        io.Fonts->AddFontFromMemoryCompressedTTF(KarlaRegular_compressed_data, KarlaRegular_compressed_size, 16.f);
 
         // Our state
         ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
@@ -165,11 +132,6 @@ namespace sb
         bool done = false;
         while (!done)
         {
-            // Poll and handle events (inputs, window resize, etc.)
-            // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
-            // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
-            // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
-            // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
             SDL_Event event;
             while (SDL_PollEvent(&event))
             {
