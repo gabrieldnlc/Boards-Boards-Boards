@@ -20,7 +20,7 @@ namespace sb
     {
         try
         {
-            for (int i = 0; i < tabs.size(); i++)
+            for (std::size_t i = 0; i < tabs.size(); i++)
             {
                 auto& tab = tabs[i];
                 if (tab.path.fullData() == path)

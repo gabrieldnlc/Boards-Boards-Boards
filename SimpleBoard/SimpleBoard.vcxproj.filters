@@ -90,6 +90,9 @@
     <ClInclude Include="src\utils\BoardColors.hpp">
       <Filter>src\utils</Filter>
     </ClInclude>
+    <ClInclude Include="src\utils\CommandQueue.hpp">
+      <Filter>src\utils</Filter>
+    </ClInclude>
     <ClInclude Include="src\utils\Error.hpp">
       <Filter>src\utils</Filter>
     </ClInclude>
@@ -103,9 +106,6 @@
       <Filter>src\utils</Filter>
     </ClInclude>
     <ClInclude Include="src\utils\LuaValue.hpp">
-      <Filter>src\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="src\utils\CommandQueue.hpp">
       <Filter>src\utils</Filter>
     </ClInclude>
     <ClInclude Include="src\utils\parsing\BoardParser.hpp">

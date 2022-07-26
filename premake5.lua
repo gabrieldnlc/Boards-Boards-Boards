@@ -108,7 +108,6 @@ project "Tests"
 	debugdir ("bin/" .. output_dir .. "/%{prj.name}")
 
 	postbuildcommands {
-		--("{COPYDIR} scripts ../" .. target_dir .. "/scripts"),
 		("{COPYDIR} ../SimpleBoard/scripts/serpent ../" .. target_dir .. "/scripts/serpent"),
 	}
 
