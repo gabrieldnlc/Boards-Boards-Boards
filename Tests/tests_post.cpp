@@ -192,108 +192,135 @@ SCENARIO("Erasing posts updates container's contents indexes", tag2)
 {
 	GIVEN("A PostContainer with some posts, some of which have links")
 	{
-		const string sample_board = R"({posts = 
-{
-  {
-    color = {
-      150,
-      150,
-      150
+		const string sample_board = R"({
+  board_config = {
+    bg_color = {
+      119,
+      119,
+      119
     },
-    content = {
-      "Nothing at all.",
-      "Testing content."
+    connection_color = {
+      255,
+      255,
+      255
     },
-    display_pos = {
-      50,
-      50
+    post_color = {
+      35,
+      53,
+      114
     },
-    tags = {
-      falsehood = {
-        true
+    selected_connection_color = {
+      15,
+      15,
+      15
+    },
+    text_color = {
+      223,
+      187,
+      187
+    }
+  },
+  connections = {
+    {
+      1,
+      2
+    },
+    {
+      2,
+      4
+    }
+  },
+  posts = {
+    {
+      content = {
+        "Testing serialization and deserialization.\n\nThis post has 1 connection."
       },
-      maybe = {
-        false,
-        true
-      },
-      next = {
-        2
-      },
-      random = {
-        5,
-        7,
-        8,
-        50.5
-      },
-      truth = {
-        false
+      display_pos = {
+        325,
+        251
       }
-    }
-  },
-  {
-    content = {
-      "Getting your bearings."
     },
-    display_pos = {
-      150,
-      150
-    }
-  },
-  {
-    content = {
-      "Playing around with testing."
-    },
-    display_pos = {
-      311,
-      295
-    },
-    tags = {
-      on_top = {
-        true
+    {
+      color = {
+        127,
+        20,
+        20
       },
-      sometext = {
-        "Random text."
+      content = {
+        "This post is red."
+      },
+      display_pos = {
+        742,
+        373
       }
-    }
-  },
-  {
-    content = {
-      "Getting your bearings."
     },
-    display_pos = {
-      250,
-      250
+    {
+      color = {
+        114,
+        40,
+        204
+      },
+      content = {
+        "But this one is purple."
+      },
+      display_pos = {
+        863,
+        285
+      }
+    },
+    {
+      content = {
+        "This post has a connection, as a treat."
+      },
+      display_pos = {
+        290,
+        413
+      }
     }
   }
-},
-board_config = {bg_color = {30, 30, 30}}
 })";
 		LuaStack::Init();
-		BoardParser parser;
-		PostContainer container = parser.Parse(LuaStack::DeserializeTableString(sample_board));
+		PostContainer container = BoardParser().Parse(LuaStack::DeserializeTableString(sample_board));
 
 		WHEN("Indexes are changed because of a removal")
 		{
-			auto& post3 = container[3];
-			REQUIRE(post3.GetIdx() == 3);
+			REQUIRE(AreIndexesValid(container));
 
-			auto& post5 = container[5];
-			REQUIRE(post5.GetIdx() == 5);
+			container.Erase(container.IteratorFromIndex(3));
 
-			container.Erase(container.IteratorFromIndex(4));
+			REQUIRE(AreIndexesValid(container));
 
 			THEN("Posts stay connected, and the ID they hold of connected post is updated")
 			{
-				REQUIRE(false);
+				auto& connections = container.connections;
+				REQUIRE(connections.size() == 2);
+
+				auto& connection_1 = connections[1];
+				auto& connection_2 = connections[2];
+
+				REQUIRE(connection_1.from == 1);
+				REQUIRE(connection_1.to == 2);
+
+				REQUIRE(connection_2.from == 2);
+				REQUIRE(connection_2.to == 3);
 			}
 		}
 		WHEN("A post that is connected to another is removed")
 		{
-			REQUIRE(false);
+			REQUIRE(container.size() == 4);
+			REQUIRE(container.connections.size() == 2);
+			container.Erase(container.IteratorFromIndex(4));
+			REQUIRE(container.size() == 3);
+			REQUIRE(AreIndexesValid(container));
 
-			THEN("Connections to the erased post are deleted, and connections that were invalidated by index changes are remade")
+			THEN("Connections to the erased post are deleted")
 			{
-				REQUIRE(false);
+				auto& connections = container.connections;
+				REQUIRE(connections.size() == 1);
+				auto& connection_1 = connections[1];
+
+				REQUIRE(connection_1.from == 1);
+				REQUIRE(connection_1.to == 2);
 			}
 
 			
@@ -305,199 +332,124 @@ SCENARIO("Calling MoveToLastPosition correctly adjusts indexes", tag2)
 {
 	GIVEN("A PostContainer populated with nodes that hold connections")
 	{
-		const string sample_board = R"({posts = 
-{
-  { -- 1
-    color = {
-      150,
-      150,
-      150
+		const string sample_board = R"({
+  board_config = {
+    bg_color = {
+      119,
+      119,
+      119
     },
-    content = {
-      "Nothing at all.",
-      "Testing content."
+    connection_color = {
+      255,
+      255,
+      255
     },
-    display_pos = {
-      50,
-      50
+    post_color = {
+      35,
+      53,
+      114
     },
-    tags = {
-      falsehood = {
-        true
+    selected_connection_color = {
+      15,
+      15,
+      15
+    },
+    text_color = {
+      223,
+      187,
+      187
+    }
+  },
+  connections = {
+    {
+      1,
+      2
+    },
+    {
+      2,
+      3
+    }
+  },
+  posts = {
+    {
+      content = {
+        "Testing serialization and deserialization.\n\nThis post has 1 connection."
       },
-      maybe = {
-        false,
-        true
-      },
-      connects_to = {
-        2
-      },
-      random = {
-        5,
-        7,
-        8,
-        50.5
-      },
-      truth = {
-        false
+      display_pos = {
+        325,
+        251
       }
-    }
-  },
-  { -- 2
-    content = {
-      "Getting your bearings."
     },
-    display_pos = {
-      150,
-      150
-    }
-  },
-  { -- 3
-    content = {
-      "Playing around with testing."
-    },
-    display_pos = {
-      311,
-      295
-    },
-    tags = {
-      on_top = {
-        true
+    {
+      color = {
+        127,
+        20,
+        20
       },
-	  connects_to = {2, 3},
-      sometext = {
-        "Random text."
+      content = {
+        "This post is red."
+      },
+      display_pos = {
+        742,
+        373
       }
-    }
-  },
-  { -- 4
-    content = {
-      "Getting your bearings."
     },
-    display_pos = {
-      250,
-      250
+    {
+      color = {
+        114,
+        40,
+        204
+      },
+      content = {
+        "But this one is purple."
+      },
+      display_pos = {
+        863,
+        285
+      }
+    },
+    {
+      content = {
+        "This post has no connections at all."
+      },
+      display_pos = {
+        290,
+        413
+      }
     }
   }
-},
-board_config = {bg_color = {30, 30, 30}}
 })";
 		LuaStack::Init();
 		PostContainer container = BoardParser().Parse(LuaStack::DeserializeTableString(sample_board));
 
+		REQUIRE(AreIndexesValid(container));
 		REQUIRE(container.size() == 4);
-		REQUIRE(AreIndexesValid(container));
+		REQUIRE(container.connections.size() == 2);
 
-		const Post& post1 = container[1];
-		const auto& post1_connections = post1.tags["connects_to"];
-		REQUIRE(post1_connections.size() == 1);
-		REQUIRE(post1_connections[1] == 2);
-
-		container.MoveToLastPosition(container.begin() + 1);
-
-		REQUIRE(AreIndexesValid(container));
-
-		REQUIRE(false);
-	}
-}
-
-SCENARIO("Any change on the order of the container's elements is reflected on their indexes", tag2)
-{
-	GIVEN("A PostContainer holding some posts")
-	{
-		const string sample_board = R"({posts = 
-{
-  {
-    color = {
-      150,
-      150,
-      150
-    },
-    content = {
-      "Nothing at all.",
-      "Testing content."
-    },
-    display_pos = {
-      50,
-      50
-    },
-    tags = {
-      falsehood = {
-        true
-      },
-      maybe = {
-        false,
-        true
-      },
-      connects_to = {
-        2
-      },
-      random = {
-        5,
-        7,
-        8,
-        50.5
-      },
-      truth = {
-        false
-      }
-    }
-  },
-  {
-    content = {
-      "Getting your bearings."
-    },
-    display_pos = {
-      150,
-      150
-    }
-  },
-  {
-    content = {
-      "Playing around with testing."
-    },
-    display_pos = {
-      311,
-      295
-    },
-    tags = {
-      on_top = {
-        true
-      },
-      sometext = {
-        "Random text."
-      }
-    }
-  },
-  {
-    content = {
-      "Getting your bearings."
-    },
-    display_pos = {
-      250,
-      250
-    }
-  }
-},
-board_config = {bg_color = {30, 30, 30}}
-})";
-		LuaStack::Init();
-		PostContainer container = BoardParser().Parse(LuaStack::DeserializeTableString(sample_board));
-		REQUIRE(container.size() == 4);
-		REQUIRE(AreIndexesValid(container));
-		REQUIRE(container[1].tags.HasConnection());
-		REQUIRE(container[1].tags["connects_to"].size() == 1);
-		REQUIRE(container[1].tags["connects_to"][1] == 2);
-
-		WHEN("A post is removed")
+		WHEN("MoveToLastPosition is called on a Post")
 		{
-			REQUIRE_NOTHROW(container.Erase(container.IteratorFromIndex(2)));
+			container.MoveToLastPosition(container.IteratorFromIndex(2));
+			REQUIRE(container.size() == 4);
+			REQUIRE(container[4].content[1].AsString() == "This post is red.");
 
-			THEN("All the posts' indexes are updated and make sense")
+			THEN("Posts that succeeded the move subject have their indexes decreased by 1")
 			{
-				REQUIRE(container.size() == 3);
 				REQUIRE(AreIndexesValid(container));
-				REQUIRE_FALSE(container[1].tags.HasConnection());
+			}
+			THEN("Connections to move subject are updated to reflect new indexes")
+			{
+				auto& connections = container.connections;
+
+				REQUIRE(connections.size() == 2);
+
+				auto& connection_1 = connections[1];
+				auto& connection_2 = connections[2];
+
+				REQUIRE(connection_1.from == 1);
+				REQUIRE(connection_1.to == 4);
+				REQUIRE(connection_2.from == 4);
+				REQUIRE(connection_2.to == 2);
+
 			}
 		}
 	}

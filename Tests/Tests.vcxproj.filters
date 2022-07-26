@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="SimpleBoard">
+      <UniqueIdentifier>{57D6AA30-C38B-2326-4C80-1DFDB8341A2A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SimpleBoard\extern">
+      <UniqueIdentifier>{9C7204F6-8856-C54B-F1B6-BF9EDDB9AFCD}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SimpleBoard\extern\imgui">
+      <UniqueIdentifier>{0605DB35-F229-2AB6-1B75-0F4607F928D4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\SimpleBoard\extern\imgui\imgui.h">
+      <Filter>SimpleBoard\extern\imgui</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\SimpleBoard\extern\imgui\imgui.cpp">
+      <Filter>SimpleBoard\extern\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="tests_boardparser.cpp" />
+    <ClCompile Include="tests_luavector.cpp" />
+    <ClCompile Include="tests_main.cpp" />
+    <ClCompile Include="tests_post.cpp" />
+    <ClCompile Include="tests_posttags.cpp" />
+  </ItemGroup>
+</Project>

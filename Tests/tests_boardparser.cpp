@@ -54,7 +54,6 @@ SCENARIO("A serialized PostContainer is correctly deserialized into a PostContai
         5,
         7,
         8,
-        50.5
       },
       truth = {
         false
@@ -128,7 +127,6 @@ board_config = {bg_color = {30, 30, 30}}
                 REQUIRE(p1_tags["random"][1] == 5);
                 REQUIRE(p1_tags["random"][2] == 7);
                 REQUIRE(p1_tags["random"][3] == 8);
-                REQUIRE(p1_tags["random"][4] == 50.5f);
                 REQUIRE(p1.content[1] == "Nothing at all.");
                 REQUIRE(p1.content[2] == "Testing content.");
 
@@ -212,38 +210,92 @@ SCENARIO("A deserialized PostContainer is equal to the original", tag)
         BoardParser parser;
 
         const string sample_board = R"({
-          posts = {
-            tags = {
-              next = {
-                2
-              },
-              falsehood = true,
-              truth = {false},
-              maybe ={false, true},
-              random = {5, 7, 8, 50.5}
-            },
-            content = {"Nothing at all.", "Testing content."},
-            display_pos = {50, 50},
-            color = {150, 150, 150},
-          },
-          {
-            tags = {},
-            content = {"Getting your bearings.",},
-            display_pos = {150, 150},
-          },
-          {
-            tags = {
-              sometext = "Random text.",
-              on_top = true,
-          },
-            content = "Playing around with testing.",
-            display_pos = {200, 200},
-          },
-          {
-            content = {"Getting your bearings.",},
-            display_pos = {250, 250},
-          },
-        })";
+  board_config = {
+    bg_color = {
+      119,
+      119,
+      119
+    },
+    connection_color = {
+      255,
+      255,
+      255
+    },
+    post_color = {
+      35,
+      53,
+      114
+    },
+    selected_connection_color = {
+      15,
+      15,
+      15
+    },
+    text_color = {
+      223,
+      187,
+      187
+    }
+  },
+  connections = {
+    {
+      1,
+      2
+    },
+    {
+      2,
+      3
+    }
+  },
+  posts = {
+    {
+      content = {
+        "Testing serialization and deserialization.\n\nThis post has 1 connection."
+      },
+      display_pos = {
+        325,
+        251
+      }
+    },
+    {
+      color = {
+        127,
+        20,
+        20
+      },
+      content = {
+        "This post is red."
+      },
+      display_pos = {
+        742,
+        373
+      }
+    },
+    {
+      color = {
+        114,
+        40,
+        204
+      },
+      content = {
+        "But this one is purple."
+      },
+      display_pos = {
+        863,
+        285
+      }
+    },
+    {
+      content = {
+        "This post has no connections at all."
+      },
+      display_pos = {
+        290,
+        413
+      }
+    }
+  }
+})";
 
         sol::table deserialized = LuaStack::DeserializeTableString(sample_board);
 
