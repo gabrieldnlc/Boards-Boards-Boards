@@ -11,8 +11,8 @@
 
 using std::string;
 
-using sb::Post;
-using sb::PostContainer;
+using board::Post;
+using board::PostContainer;
 
 using utils::BoardParser;
 using utils::LuaStack;
@@ -80,7 +80,7 @@ SCENARIO("Overload resolution regarding CreatePost/Back and Insert and their r-v
 	{
 		PostContainer container;
 
-		WHEN("Lvalues and Rvalues of std::string or sb::Post are used to call CreatePost/Back and Insert")
+		WHEN("Lvalues and Rvalues of std::string or board::Post are used to call CreatePost/Back and Insert")
 		{
 			Post lvalue_post("Testing");
 			Post simulating_rvalue_post("Testing 2");

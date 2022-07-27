@@ -59,7 +59,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;BOARD_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Catch2;..\SimpleBoard\src;..\SimpleBoard\extern\Lua\include;..\SimpleBoard\extern\sol;..\SimpleBoard\extern\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Catch2;..\BoardsBoardsBoards\src;..\BoardsBoardsBoards\extern\Lua\include;..\BoardsBoardsBoards\extern\sol;..\BoardsBoardsBoards\extern\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -69,10 +69,10 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>PostContainer.obj;LuaStack.obj;ParsingStrategies.obj;lua54.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\bin-int\Debug-windows-x86\SimpleBoard;..\SimpleBoard\extern\Lua\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\bin-int\Debug-windows-x86\BoardsBoardsBoards;..\BoardsBoardsBoards\extern\Lua\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /Q /E /Y /I ..\SimpleBoard\scripts\serpent ..\bin\Debug-windows-x86\$(ProjectName)\scripts\serpent</Command>
+      <Command>xcopy /Q /E /Y /I ..\BoardsBoardsBoards\scripts\serpent ..\bin\Debug-windows-x86\$(ProjectName)\scripts\serpent</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -80,7 +80,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;BOARD_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Catch2;..\SimpleBoard\src;..\SimpleBoard\extern\Lua\include;..\SimpleBoard\extern\sol;..\SimpleBoard\extern\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Catch2;..\BoardsBoardsBoards\src;..\BoardsBoardsBoards\extern\Lua\include;..\BoardsBoardsBoards\extern\sol;..\BoardsBoardsBoards\extern\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -94,10 +94,10 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>PostContainer.obj;LuaStack.obj;ParsingStrategies.obj;lua54.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\bin-int\Release-windows-x86\SimpleBoard;..\SimpleBoard\extern\Lua\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\bin-int\Release-windows-x86\BoardsBoardsBoards;..\BoardsBoardsBoards\extern\Lua\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /Q /E /Y /I ..\SimpleBoard\scripts\serpent ..\bin\Release-windows-x86\$(ProjectName)\scripts\serpent</Command>
+      <Command>xcopy /Q /E /Y /I ..\BoardsBoardsBoards\scripts\serpent ..\bin\Release-windows-x86\$(ProjectName)\scripts\serpent</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -108,8 +108,8 @@
     <ClCompile Include="tests_posttags.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SimpleBoard\SimpleBoard.vcxproj">
-      <Project>{57D6AA30-C38B-2326-4C80-1DFDB8341A2A}</Project>
+    <ProjectReference Include="..\BoardsBoardsBoards\BoardsBoardsBoards.vcxproj">
+      <Project>{76CA0FE9-62AE-D03E-CB0E-CB91B711BBC0}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

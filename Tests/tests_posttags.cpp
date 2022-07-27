@@ -4,7 +4,7 @@
 
 #include "renderables/posts/Tags.hpp"
 
-using namespace sb;
+using namespace board;
 
 const std::string t1 = "[Tag]";
 const std::string t2 = "[LuaValue]";

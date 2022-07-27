@@ -8,7 +8,7 @@
 
 using utils::LuaStack;
 using utils::BoardParser;
-using sb::PostContainer;
+using board::PostContainer;
 using std::string;
 
 const string tag = "[BoardParser]";

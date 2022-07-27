@@ -5,7 +5,7 @@
 
 #include "containers/LuaVector.hpp"
 
-using namespace sb;
+using namespace board;
 using std::vector;
 using std::string;
 using std::size_t;

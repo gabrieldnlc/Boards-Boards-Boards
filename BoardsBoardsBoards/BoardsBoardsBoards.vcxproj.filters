@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="extern">
+      <UniqueIdentifier>{7BE134FC-6783-5FD2-503E-73263C7FE622}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="extern\imgui">
+      <UniqueIdentifier>{25DF20B4-1142-B058-BAC7-E80EA6097CDB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="extern\imgui\backends">
+      <UniqueIdentifier>{EF32A80F-5B9F-630A-2493-FB6790BE8572}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="extern\imgui\misc">
+      <UniqueIdentifier>{203163D0-8C47-6166-D5BE-EC87411432EE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="extern\imgui\misc\cpp">
+      <UniqueIdentifier>{F23AF2C2-5EA7-ADBD-279B-451B93C6CF25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\containers">
+      <UniqueIdentifier>{B21B5BCE-9EE9-4ED4-877D-BFFA73EA2A39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\fonts">
+      <UniqueIdentifier>{469330B5-B2FD-E42B-FB3B-96D167E5C280}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\renderables">
+      <UniqueIdentifier>{8399A0C5-EF24-0E8A-F835-917E64406A8A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\renderables\posts">
+      <UniqueIdentifier>{6B74C8E5-D7E0-83E0-A0D4-1B3E0C00A648}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\renderables\tabs">
+      <UniqueIdentifier>{BCC80F64-A857-992D-5176-AD283DE4A9D3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\renderables\windows">
+      <UniqueIdentifier>{DDAE2C86-49E6-741D-52F0-D840BEA69B16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\utils">
+      <UniqueIdentifier>{6DAA42B6-D914-F72C-2253-A8D28EFCD481}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\utils\parsing">
+      <UniqueIdentifier>{709C6D0C-DCB2-6BA2-252A-F7C3917F3C2A}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Application.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UI.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\containers\LuaVector.hpp">
+      <Filter>src\containers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\containers\PostContainer.hpp">
+      <Filter>src\containers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderables\DearImGuiFlags.hpp">
+      <Filter>src\renderables</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderables\Widget.hpp">
+      <Filter>src\renderables</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderables\WidgetManager.hpp">
+      <Filter>src\renderables</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderables\posts\Post.hpp">
+      <Filter>src\renderables\posts</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderables\posts\PostContent.hpp">
+      <Filter>src\renderables\posts</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderables\posts\Tags.hpp">
+      <Filter>src\renderables\posts</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderables\tabs\BoardTab.hpp">
+      <Filter>src\renderables\tabs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderables\tabs\TabBar.hpp">
+      <Filter>src\renderables\tabs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderables\windows\ErrorPrompt.hpp">
+      <Filter>src\renderables\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderables\windows\Prompt.hpp">
+      <Filter>src\renderables\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\Bezier.hpp">
+      <Filter>src\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\BoardColors.hpp">
+      <Filter>src\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\CommandQueue.hpp">
+      <Filter>src\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\Error.hpp">
+      <Filter>src\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\FileDialog.hpp">
+      <Filter>src\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\FilePath.hpp">
+      <Filter>src\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\LuaStack.hpp">
+      <Filter>src\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\LuaValue.hpp">
+      <Filter>src\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\parsing\BoardParser.hpp">
+      <Filter>src\utils\parsing</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\parsing\ParsingHelpers.hpp">
+      <Filter>src\utils\parsing</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\parsing\ParsingStrategies.hpp">
+      <Filter>src\utils\parsing</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\parsing\ScriptParser.hpp">
+      <Filter>src\utils\parsing</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="extern\imgui\backends\imgui_impl_dx11.cpp">
+      <Filter>extern\imgui\backends</Filter>
+    </ClCompile>
+    <ClCompile Include="extern\imgui\backends\imgui_impl_sdl.cpp">
+      <Filter>extern\imgui\backends</Filter>
+    </ClCompile>
+    <ClCompile Include="extern\imgui\imgui.cpp">
+      <Filter>extern\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="extern\imgui\imgui_demo.cpp">
+      <Filter>extern\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="extern\imgui\imgui_draw.cpp">
+      <Filter>extern\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="extern\imgui\imgui_tables.cpp">
+      <Filter>extern\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="extern\imgui\imgui_widgets.cpp">
+      <Filter>extern\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="extern\imgui\misc\cpp\imgui_stdlib.cpp">
+      <Filter>extern\imgui\misc\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Application.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UI.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\containers\PostContainer.cpp">
+      <Filter>src\containers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\fonts\karlaregular.cpp">
+      <Filter>src\fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderables\WidgetManager.cpp">
+      <Filter>src\renderables</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderables\tabs\BoardTab.cpp">
+      <Filter>src\renderables\tabs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderables\tabs\TabBar.cpp">
+      <Filter>src\renderables\tabs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderables\windows\ErrorPrompt.cpp">
+      <Filter>src\renderables\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utils\FileDialog.cpp">
+      <Filter>src\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utils\LuaStack.cpp">
+      <Filter>src\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utils\parsing\ParsingStrategies.cpp">
+      <Filter>src\utils\parsing</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

@@ -1,5 +1,5 @@
-workspace "SimpleBoard"
-	startproject "SimpleBoard"
+workspace "BoardsBoardsBoards"
+	startproject "BoardsBoardsBoards"
 	architecture "x86"
 	configurations{
 		"Debug",
@@ -12,8 +12,8 @@ workspace "SimpleBoard"
 output_dir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 target_dir = ("bin/" .. output_dir .. "/%{prj.name}")
 
-project "SimpleBoard"
-	location "SimpleBoard"
+project "BoardsBoardsBoards"
+	location "BoardsBoardsBoards"
 	kind "ConsoleApp"
 	language "C++"
 	defines{"IMGUI_DEFINE_MATH_OPERATORS"}
@@ -108,24 +108,24 @@ project "Tests"
 	debugdir ("bin/" .. output_dir .. "/%{prj.name}")
 
 	postbuildcommands {
-		("{COPYDIR} ../SimpleBoard/scripts/serpent ../" .. target_dir .. "/scripts/serpent"),
+		("{COPYDIR} ../BoardsBoardsBoards/scripts/serpent ../" .. target_dir .. "/scripts/serpent"),
 	}
 
-	links { "SimpleBoard", "PostContainer.obj", "LuaStack.obj", "ParsingStrategies.obj", "lua54.lib" }
+	links { "BoardsBoardsBoards", "PostContainer.obj", "LuaStack.obj", "ParsingStrategies.obj", "lua54.lib" }
 	files{
 		"%{prj.name}/**.cpp",
 
 	}
 	includedirs{
 		"%{prj.name}/Catch2/",
-		"SimpleBoard/src/",
-		"SimpleBoard/extern/Lua/include",
-		"SimpleBoard/extern/sol",
-		"SimpleBoard/extern/imgui/",
+		"BoardsBoardsBoards/src/",
+		"BoardsBoardsBoards/extern/Lua/include",
+		"BoardsBoardsBoards/extern/sol",
+		"BoardsBoardsBoards/extern/imgui/",
 	}
 	libdirs{
-		"bin-int/" .. output_dir .. "/SimpleBoard",
-		"SimpleBoard/extern/Lua/lib",
+		"bin-int/" .. output_dir .. "/BoardsBoardsBoards",
+		"BoardsBoardsBoards/extern/Lua/lib",
 	}
 
 	filter "system:windows"
