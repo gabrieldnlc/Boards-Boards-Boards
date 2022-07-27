@@ -1,11 +1,16 @@
 # Description
+
+![Animation](https://user-images.githubusercontent.com/83305378/181241785-37d8d5e6-fb2c-4651-ad29-a11d1abe1517.gif)
+
 An implementation of free-form Board focused on text posts and their connections. Made with C++ and [Dear ImGui](https://github.com/ocornut/imgui).
 
 # Build instructions
 
-Boards, Boards, Boards uses [Premake](https://github.com/premake/premake-core) to handle solution files. Run VS2022.bat to get an .sln file targeting Visual Studio 2022 or use the command line to run Premake passing the [desired target](https://premake.github.io/docs/Using-Premake/) as a parameter:
+Boards, Boards, Boards uses [Premake](https://github.com/premake/premake-core) to handle solution files. 
 
-Code:
+Run VS2022.bat to get an .sln file targeting Visual Studio 2022 or use the command line to run Premake passing the [desired target](https://premake.github.io/docs/Using-Premake/) as a parameter:
+
+
 ```Bash
 $ cd premake/
 $ premake5.exe --file=../premake5.lua <desired-target>
