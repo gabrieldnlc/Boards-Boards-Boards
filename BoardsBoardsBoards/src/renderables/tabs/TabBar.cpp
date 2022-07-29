@@ -23,7 +23,7 @@ namespace board
             for (std::size_t i = 0; i < tabs.size(); i++)
             {
                 auto& tab = tabs[i];
-                if (tab.path.fullData() == path)
+                if (tab.path.GetFullPath() == path)
                 {
                     change_to = i;
                     return;
@@ -64,23 +64,29 @@ namespace board
             {
                 NewBoardTab();
             }
+
             int count = -1;
             active_tab = -1;
+
             for (auto it = std::begin(tabs); it != std::end(tabs); it++)
             {
                 count++;
+
                 if (!(*it).is_open)
                 {
                     to_delete.emplace_back(it);
                     continue;
                 }
+
                 auto& tab = (*it);
+
                 ImGuiTabItemFlags set_selected = ImGuiTabItemFlags_None;
                 if (change_to != -1 && change_to == count)
                 {
                     set_selected |= ImGuiTabItemFlags_SetSelected;
                     change_to = -1;
                 }
+
                 if (ImGui::BeginTabItem(tab.GetDisplayName(), &tab.is_open, TabItemFlags | set_selected))
                 { 
                     tab.Render();
@@ -99,6 +105,7 @@ namespace board
                     #endif
                     tabs.erase(to_delete[i]);
                 }
+
                 to_delete.clear();
             }
 

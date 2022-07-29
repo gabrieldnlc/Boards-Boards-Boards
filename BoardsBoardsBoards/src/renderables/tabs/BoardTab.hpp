@@ -13,19 +13,26 @@
 namespace board
 {
     using std::string;
+    using utils::FilePath;
 
     class BoardTab : public Widget
     {
     public:
+
+        enum class status { unnamed_file, fromdisk, fromdisk_modified };
+        status current_status = status::unnamed_file;
+
         BoardTab(string unique_ID);
         BoardTab(PostContainer&& container, string path);
         BoardTab(const PostContainer& container, string path);
+
         void Render();
-        enum class status { unnamed_file, fromdisk, fromdisk_modified };
-        status current_status = status::unnamed_file;
-        const char* GetDisplayName() { return path.data(); }
-        PostContainer container;
+
         FilePath path;
+        const char* GetDisplayName() { return path.AtCurrentLevel(); }
+
+        PostContainer container;
+        
     private:
 
         struct CurrentFrameInfo
@@ -138,8 +145,6 @@ namespace board
      
         float s_unit; // Short for "screen unit" -> ImGui::GetFontSize() every frame
 
-
-
         void SetSelectedPost(std::size_t idx);
         void DragSelectedPost();
 
@@ -149,6 +154,7 @@ namespace board
             
             // pair.first = displaying rectangle
             // pair.second = editing rectangle
+
             LuaVector<std::pair<ImRect, ImRect>> content_rects = LuaVector<std::pair<ImRect, ImRect>>(true);
         };
         LuaVector<PostRenderingInfo> posts_info;

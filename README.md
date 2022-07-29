@@ -2,7 +2,9 @@
 
 ![Animation](https://user-images.githubusercontent.com/83305378/181241785-37d8d5e6-fb2c-4651-ad29-a11d1abe1517.gif)
 
-An implementation of free-form Board focused on text posts and their connections. Made with C++ and [Dear ImGui](https://github.com/ocornut/imgui).
+A implementation of free-form Board focused on text posts and their connections. Made with C++ and [Dear ImGui](https://github.com/ocornut/imgui) for Windows.
+
+Unit testing is powered by [Catch2](https://github.com/catchorg/Catch2/).
 
 # Build instructions
 

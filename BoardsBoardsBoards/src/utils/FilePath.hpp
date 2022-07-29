@@ -1,134 +1,75 @@
 #pragma once
 
 #include <string>
-#include <sstream>
 #include <vector>
-#include <algorithm>
 
-namespace board
+namespace utils
 {
+	using std::string;
+	using std::vector;
+	using std::size_t;
+
 	class FilePath
 	{
-	public:
-		FilePath(std::string path_, char delimiter = '\\') 
-			: path(std::move(path_)), delimiter(delimiter)
-		{ //TODO better handling of fringe cases
-			if (path.empty())
-			{
-				start_of_level = path.data();
-				return;
-			}
-			if (path.find(delimiter, 0) == std::string::npos)
-			{
+		// - This class serves two functions: 
+		//  it holds the complete path to the file that is being edited and
+		//  AtCurrentLevel() will show only the relevant data for displaying the tab name.
 
-			}
-			if (path.size() == 1)
+#ifdef WIN32
+		static const char d = '\\';
+#else
+		static const char d = '/';
+#endif
+
+	public:
+		FilePath(const char* path, char delimiter = d) : FilePath(string(path), delimiter) {}
+		FilePath(const string& path, char delimiter = d) : fullPath(path), delimiter(delimiter)
+		{
+			if (path.size() <= 1 || path.find(delimiter, 0) == std::string::npos)
 			{
-				if (path[0] == delimiter)
-				{
-					pos.push_back(0);
-				}
-				setPointerToLevel();
 				return;
 			}
-			if (path.back() == delimiter)
+
+			if (fullPath.back() == delimiter)
 			{
-				this->path = path.substr(0, path.size() - 2);
+				fullPath = fullPath.substr(0, path.size() - 2);
 			}
-			calculateSplitPositions();
-			setPointerToLevel();
-		}
-		void setLevel(std::size_t level) 
-		{
-			if (level <= 0)
+
+			size_t i = 0;
+			size_t pos = fullPath.find(delimiter, i);
+
+			while (pos != string::npos)
 			{
-				current_level = 0;
-				setPointerToLevel();
-				return;
+				levels.push_back(pos);
+				i = pos + 1;
+				pos = fullPath.find(delimiter, i);
 			}
-			if (level >= pos.size() - 1)
-			{
-				current_level = pos.size() - 1;
-				start_of_level = path.data();
-				return;
-			}
-			current_level = level;
-			setPointerToLevel();
+
+			curr_level = levels.size() - 1;
 		}
-		bool empty() const
+
+		const string& GetFullPath() const { return fullPath; }
+		const char* AtCurrentLevel() const { return fullPath.data() + levels[curr_level] + 1; }
+
+		size_t GetCurrentLevel() const { return curr_level; }
+		size_t GetTotalLevels() const { return levels.size(); }
+		bool LevelUp()
 		{
-			return path.empty();
+			if (curr_level + 1 >= levels.size()) return false;
+			curr_level++;
+			return true;
 		}
-		void goUp()
+		bool LevelDown()
 		{
-			if (path.empty()) return;
-			if (current_level >= pos.size() - 1) return;
-			setLevel(current_level + 1);
-		}
-		void goDown()
-		{
-			if (path.empty()) return;
-			if (current_level == 0) return;
-			setLevel(current_level - 1);
-		}
-		const char* data() const
-		{
-			//return start_of_level;
-			return path.data() + pos[current_level];
-		}
-		const char* fullData() const
-		{
-			return path.data();
-		}
-		bool isSliced() const
-		{
-			return pos.empty();
-		}
-		bool isLastLevel() const
-		{
-			return current_level == pos.size() - 1;
-		}
-		bool isFirstLevel() const
-		{
-			return current_level == 0;
-		}
-		const char* GetFirstLevel() const
-		{
-			return path.data() + pos[0] + 1;
+			if (curr_level == 0) return false;
+			curr_level--;
+			return true;
 		}
 
 	private:
-		void setPointerToLevel()
-		{
-			if (pos.empty() || pos.size() == 1)
-			{
-				start_of_level = path.data();
-				return;
-			}
-			start_of_level = path.data() + pos[current_level] + 1;
-		}
-		void calculateSplitPositions()
-		{
-			pos.push_back(0);
-			std::size_t i = path.find(delimiter, 0);
-			if (i != std::string::npos)
-			{
-				if (i != 0)
-				{
-					pos.insert(std::begin(pos), i);
-				}
-				i = path.find(delimiter, i + 1);
-				while (i != std::string::npos)
-				{
-					pos.insert(std::begin(pos), i);
-					i = path.find(delimiter, i + 1);
-				}
-			}
-		}
-		char* start_of_level;
-		std::string path;
-		std::vector<std::size_t> pos;
-		std::size_t current_level = 0;
+		string fullPath;
+		size_t curr_level = 0;
+		vector<int> levels{ -1 };
 		char delimiter;
 	};
 }

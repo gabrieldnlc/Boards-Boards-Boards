@@ -12,18 +12,11 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\SimpleBoard\extern\imgui\imgui.h">
-      <Filter>SimpleBoard\extern\imgui</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\SimpleBoard\extern\imgui\imgui.cpp">
-      <Filter>SimpleBoard\extern\imgui</Filter>
-    </ClCompile>
     <ClCompile Include="tests_boardparser.cpp" />
     <ClCompile Include="tests_luavector.cpp" />
     <ClCompile Include="tests_main.cpp" />
     <ClCompile Include="tests_post.cpp" />
     <ClCompile Include="tests_posttags.cpp" />
+    <ClCompile Include="tests_filepath.cpp" />
   </ItemGroup>
 </Project>
