@@ -2,6 +2,7 @@
 
 #include <sstream>
 #include <format>
+#include <unordered_map>
 
 #include "imgui.h"
 
@@ -16,6 +17,37 @@ using utils::BoardParser;
 
 namespace board
 {
+    void TabBar::CheckForRepeatedTabNames(bool first_run)
+    {
+        std::unordered_map<std::string, std::vector<std::vector<BoardTab>::iterator>> titles;
+        for (auto it = std::begin(tabs); it != std::end(tabs); it++)
+        {
+            if (first_run) it->path.GoToFirstLevel();
+            titles[it->path.AtCurrentLevel()].push_back(it);
+        }
+
+        bool recursion = false;
+
+        for (auto& pair : titles)
+        {
+            const std::string& key = pair.first;
+            auto& iterators = pair.second;
+
+            if (iterators.size() > 1)
+            {
+                recursion = true;
+                for (auto& it : iterators)
+                {
+                    it->path.LevelUp();
+                }
+            }
+        }
+        if (recursion)
+        {
+            CheckForRepeatedTabNames(false);
+        }
+    }
+
     void TabBar::NewBoardTab(const std::string& path)
     {
         try
@@ -33,6 +65,8 @@ namespace board
             PostContainer container = BoardParser().Parse(t);
             BoardTab new_tab(std::move(container), path);
             tabs.push_back(std::move(new_tab));
+
+            CheckForRepeatedTabNames();
         }
         catch (const std::exception& e)
         {
@@ -107,6 +141,8 @@ namespace board
                 }
 
                 to_delete.clear();
+
+                CheckForRepeatedTabNames();
             }
 
             ImGui::EndTabBar();

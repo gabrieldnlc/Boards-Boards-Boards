@@ -18,15 +18,14 @@ namespace board
 		void Render() override;
 	private:
 		void NewBoardTab();
-
 		void NewBoardTab(const std::string& path);
-		
+
+		void CheckForRepeatedTabNames(bool first_run = true);
 
 		std::vector<BoardTab> tabs;
 		using BoardIt = std::vector<BoardTab>::iterator;
 		std::vector<BoardIt> to_delete;
 
-		
 		bool hasActiveTab() { return active_tab >= 0; }
 
 		// - Will throw if !hasActiveTab()

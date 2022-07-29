@@ -53,17 +53,26 @@ namespace utils
 
 		size_t GetCurrentLevel() const { return curr_level; }
 		size_t GetTotalLevels() const { return levels.size(); }
-		bool LevelUp()
+
+		void GoToFirstLevel() { curr_level = levels.size() - 1; }
+		void GoToLastLevel() { curr_level = 0; }
+
+		bool LevelDown()
 		{
 			if (curr_level + 1 >= levels.size()) return false;
 			curr_level++;
 			return true;
 		}
-		bool LevelDown()
+		bool LevelUp()
 		{
 			if (curr_level == 0) return false;
 			curr_level--;
 			return true;
+		}
+
+		const char* AtLevel(std::size_t level)
+		{
+			return fullPath.data() + levels[level] + 1;
 		}
 
 	private:
