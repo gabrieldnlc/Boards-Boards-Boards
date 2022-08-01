@@ -6,7 +6,7 @@ namespace board
     using utils::FileOpenError;
     using utils::FileWriteError;
 
-    std::string FileDialog::Open()
+    string FileDialog::Open()
     {
         nfdchar_t* outPath = NULL;
         nfdresult_t result = NFD_OpenDialog("lua", NULL, &outPath);
@@ -22,11 +22,11 @@ namespace board
         }
     }
 
-    std::vector<std::string> FileDialog::OpenMultiple()
+    vector<string> FileDialog::OpenMultiple()
     {
         nfdpathset_t outPaths;
         nfdresult_t result = NFD_OpenDialogMultiple("lua", NULL, &outPaths);
-        std::vector<std::string> paths;
+        vector<string> paths;
 
         switch (result)
         {
@@ -44,7 +44,7 @@ namespace board
         }
     }
 
-    std::string FileDialog::Save()
+    string FileDialog::Save()
     {
         nfdchar_t* outPath = NULL;
         nfdresult_t result = NFD_SaveDialog("lua", NULL, &outPath);
@@ -53,7 +53,7 @@ namespace board
         {
         case (NFD_OKAY):
         {
-            std::string ret = outPath;
+            string ret = outPath;
             if (!ret.contains(".lua"))
             {
                 ret += ".lua";

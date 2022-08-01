@@ -17,7 +17,7 @@ using utils::BoardParser;
 
 namespace board
 {
-    void TabBar::CheckForRepeatedTabNames(bool first_run)
+    void TabBar::EnforceNoRepeatedTabNames(bool first_run)
     {
         std::unordered_map<std::string, std::vector<std::vector<BoardTab>::iterator>> titles;
         for (auto it = std::begin(tabs); it != std::end(tabs); it++)
@@ -44,7 +44,7 @@ namespace board
         }
         if (recursion)
         {
-            CheckForRepeatedTabNames(false);
+            EnforceNoRepeatedTabNames(false);
         }
     }
 
@@ -66,7 +66,7 @@ namespace board
             BoardTab new_tab(std::move(container), path);
             tabs.push_back(std::move(new_tab));
 
-            CheckForRepeatedTabNames();
+            EnforceNoRepeatedTabNames();
         }
         catch (const std::exception& e)
         {
@@ -142,7 +142,7 @@ namespace board
 
                 to_delete.clear();
 
-                CheckForRepeatedTabNames();
+                EnforceNoRepeatedTabNames();
             }
 
             ImGui::EndTabBar();

@@ -70,7 +70,7 @@ namespace utils
 			return true;
 		}
 
-		const char* AtLevel(std::size_t level)
+		const char* AtLevel(std::size_t level) const
 		{
 			return fullPath.data() + levels[level] + 1;
 		}

@@ -8,6 +8,7 @@
 
 namespace utils
 {
+	// Encapsulates an std::variant to make a bridge with the underlying Lua stack being used
 	class LuaValue
 	{
 	public:
@@ -51,35 +52,35 @@ namespace utils
 			}
 		}
 
-		bool operator== (const LuaValue& t2) const
+		bool operator== (const LuaValue& rhs) const
 		{
-			return ((index() == t2.index()) && (entry == t2.entry));
+			return ((index() == rhs.index()) && (entry == rhs.entry));
 		}
-		bool operator== (int i) const
+		bool operator== (int rhs) const
 		{
-			if (isFloat()) return asFloat() == i;
-			return (isInt() && asInt() == i);
+			if (isFloat()) return asFloat() == rhs;
+			return (isInt() && asInt() == rhs);
 		}
-		bool operator== (std::size_t s) const
+		bool operator== (std::size_t rhs) const
 		{
-			return operator==((int)s);
+			return operator==((int)rhs);
 		}
-		bool operator== (float fl) const
+		bool operator== (float rhs) const
 		{
-			if (isInt()) return asInt() == fl;
-			return (isFloat() && asFloat() == fl);
+			if (isInt()) return asInt() == rhs;
+			return (isFloat() && asFloat() == rhs);
 		}
-		bool operator== (bool b) const
+		bool operator== (bool rhs) const
 		{
-			return (isBool() && asBool() == b);
+			return (isBool() && asBool() == rhs);
 		}
-		bool operator== (const char* str) const
+		bool operator== (const char* rhs) const
 		{
-			return (isString() && asString() == str);
+			return (isString() && asString() == rhs);
 		}
-		bool operator== (const std::string& str) const
+		bool operator== (const std::string& rhs) const
 		{
-			return (isString() && asString() == str);
+			return (isString() && asString() == rhs);
 		}
 
 	private:

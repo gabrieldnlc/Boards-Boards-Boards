@@ -13,23 +13,23 @@ namespace utils
 	{
 		return sol::table(lua_state, sol::create);
 	}
-	std::string LuaStack::StringFromFile(const std::string& path)
+	string LuaStack::StringFromFile(const string& path)
 	{
 		std::ifstream input_file(path);
 		if (!input_file.is_open())
 		{
 			throw FileOpenError(path);
-		} //TODO more error catching
+		} //TODO more in-depth error throwing
 		return std::string((std::istreambuf_iterator<char>(input_file)), std::istreambuf_iterator<char>());
 	}
 
-	void LuaStack::GlobalToFile(const std::string& global_table, const std::string& path)
+	void LuaStack::GlobalToFile(const std::string& global_table, const string& path)
 	{
 		sol::table global = GetGlobalTable(global_table);
 		TableToFile(global, path);
 	}
 
-	void LuaStack::TableToFile(const sol::table& table, const std::string& path)
+	void LuaStack::TableToFile(const sol::table& table, const string& path)
 	{
 		std::string serialized = TableToString(table);
 		std::ofstream file(path, std::fstream::out);
@@ -37,7 +37,7 @@ namespace utils
 		file << serialized;
 	}
 
-	std::string LuaStack::GlobalTableToString(const std::string& global_table)
+	string LuaStack::GlobalTableToString(const string& global_table)
 	{
 		sol::table table = GetGlobalTable(global_table);
 		return TableToString(table);	
@@ -68,7 +68,7 @@ namespace utils
 		return serialized;
 	}
 
-	sol::table LuaStack::DeserializeTableString(const std::string& serialized_table)
+	sol::table LuaStack::DeserializeTableString(const string& serialized_table)
 	{
 		sol::table serpent = GetGlobalTable("serpent");
 		if (!serpent.valid()) {
@@ -81,7 +81,7 @@ namespace utils
 		try
 		{
 			std::pair<bool, sol::table> t = deserialize(serialized_table, options);
-			if (!t.first) throw DeserializingError(); //weird but necessary
+			if (!t.first) throw DeserializingError(); // Weird but necessary
 			return t.second;
 		}
 		catch (const std::exception&)
@@ -91,9 +91,9 @@ namespace utils
 		
 	}
 
-	sol::table LuaStack::TableFromFile(const std::string& path)
+	sol::table LuaStack::TableFromFile(const string& path)
 	{
-		std::string serialized = "return " + StringFromFile(path);
+		string serialized = "return " + StringFromFile(path);
 		return DeserializeTableString(serialized);
 	}
 
@@ -103,24 +103,23 @@ namespace utils
 		lua_state.require_file("serpent", "scripts/serpent/src/serpent.lua");
 	}
 
-	void LuaStack::FlushStack() //TODO test this
+	void LuaStack::FlushStack()
 	{
 		lua_state = sol::state();
 		Init();
-		//TODO: collect_garbage() ?
 	}
 
-	void LuaStack::ScriptToGlobal(const std::string& path)
+	void LuaStack::ScriptToGlobal(const string& path)
 	{
 		lua_state.script_file(path); //TODO error catching
 	}
 
-	sol::object LuaStack::Require(const std::string& key, const std::string& path)
+	sol::object LuaStack::Require(const string& key, const string& path)
 	{
 		return lua_state.require_file(key, path);
 	}
 	
-	sol::object LuaStack::GetVariableFromStack(const std::string& object_name)
+	sol::object LuaStack::GetVariableFromStack(const string& object_name)
 	{
 		auto object = lua_state[object_name];
 		if (!object.valid())
@@ -136,7 +135,7 @@ namespace utils
 	}
 
 	
-	sol::table LuaStack::GetGlobalTable(const std::string& table_name)
+	sol::table LuaStack::GetGlobalTable(const string& table_name)
 	{
 		auto table = lua_state[table_name];
 		if (!table.valid())

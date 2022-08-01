@@ -7,11 +7,15 @@
 
 namespace board
 {
+	using std::string;
+	using std::vector;
+
 	class FileDialog
 	{
 	public:
-		static std::string Open();
-		static std::vector<std::string> OpenMultiple();
-		static std::string Save();
+		
+		static string Open();
+		static vector<string> OpenMultiple();
+		static string Save();
 	};
 }

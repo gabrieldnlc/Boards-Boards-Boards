@@ -61,13 +61,13 @@ namespace utils
 			return ImColor(arr[0], arr[1], arr[2]);
 		}
 
-		bool operator==(const BoardColors& another_table) const
+		bool operator==(const BoardColors& rhs) const
 		{
-			const bool post_equals = std::equal(std::begin(post), std::end(post), std::begin(another_table.post));
-			const bool bg_equals = std::equal(std::begin(bg), std::end(bg), std::begin(another_table.bg));
-			const bool connection_equals = std::equal(std::begin(connection), std::end(connection), std::begin(another_table.connection));
-			const bool selected_connection_equals = std::equal(std::begin(selected_connection), std::end(selected_connection), std::begin(another_table.selected_connection));
-			const bool text_equals = std::equal(std::begin(text), std::end(text), std::begin(another_table.text));
+			const bool post_equals = std::equal(std::begin(post), std::end(post), std::begin(rhs.post));
+			const bool bg_equals = std::equal(std::begin(bg), std::end(bg), std::begin(rhs.bg));
+			const bool connection_equals = std::equal(std::begin(connection), std::end(connection), std::begin(rhs.connection));
+			const bool selected_connection_equals = std::equal(std::begin(selected_connection), std::end(selected_connection), std::begin(rhs.selected_connection));
+			const bool text_equals = std::equal(std::begin(text), std::end(text), std::begin(rhs.text));
 			return (post_equals && bg_equals && connection_equals && selected_connection_equals && text_equals);
 		}
 

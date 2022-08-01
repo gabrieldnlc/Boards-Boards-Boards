@@ -15,11 +15,12 @@ namespace board
 		
 	public:
 
-		Post(std::string text = "") : content(true)
+		Post(std::string text = "")
 		{
 			content.EmplaceBack(std::move(text));
 		}
-		Post(const std::vector<std::string>& str_vector) : content(true)
+
+		Post(const std::vector<std::string>& str_vector)
 		{
 			for (auto& str : str_vector)
 			{
@@ -27,36 +28,36 @@ namespace board
 			}
 		}
 
-		bool operator== (const Post& another_post) const
+		bool operator== (const Post& rhs) const
 		{
-			const bool same_content = content == another_post.content;
-			const bool same_tags = tags == another_post.tags;
-			const bool same_display_pos = display_pos == another_post.display_pos;
-			const bool same_color = (color[0] == another_post.color[0]) && (color[1] == another_post.color[1]) && (color[2] == another_post.color[2]);
+			const bool same_content = content == rhs.content;
+			const bool same_tags = tags == rhs.tags;
+			const bool same_display_pos = display_pos == rhs.display_pos;
+			const bool same_color = (color[0] == rhs.color[0]) && (color[1] == rhs.color[1]) && (color[2] == rhs.color[2]);
 
 			return (same_content && same_tags && same_display_pos && same_color);
 
 		}
 
-		std::size_t GetIdx() const { return Idx; }
-
-		void SetIdx(std::size_t new_idx) { Idx = new_idx; }
-
-		void IndexShift(int offset) { Idx += offset; }
-
-		bool HasColor()
+		bool HasColor() const
 		{
 			return (color[0] >= 0 && color[1] >= 0 && color[2] >= 0);
 		}
+
+
+		std::size_t GetIdx() const { return Idx; }
+		void SetIdx(std::size_t new_idx) { Idx = new_idx; }
+		void IndexShift(int offset) { Idx += offset; }
+
 		
-		LuaVector<PostContent> content;
+		LuaVector<PostContent> content = LuaVector<PostContent>(true);
 		std::size_t editing_content = 0;
 		std::pair<float, float> display_pos;
 		float color[3]{ -1.f, -1.f, -1.f };
 		Tags tags;		
 		
 	private:
-		std::size_t Idx = 0; // if 0, it is not inserted in PostContainer
+		std::size_t Idx = 0; // If 0, Post is not inserted into PostContainer
 		
 	};
 }

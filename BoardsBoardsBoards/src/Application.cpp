@@ -20,7 +20,7 @@ namespace board
 {
 	int Application::Start()
 	{
-        // - Mostly boilerplate code from imgui
+        // - boilerplate code from imgui
 		static ID3D11Device* g_pd3dDevice = NULL;
 		static ID3D11DeviceContext* g_pd3dDeviceContext = NULL;
 		static IDXGISwapChain* g_pSwapChain = NULL;
@@ -98,7 +98,7 @@ namespace board
         SDL_GetWindowWMInfo(window, &wmInfo);
         HWND hwnd = (HWND)wmInfo.info.win.window;
 
-        // Initialize Direct3D
+        
         if (!CreateDeviceD3D(hwnd))
         {
             CleanupDeviceD3D();
@@ -109,14 +109,13 @@ namespace board
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
         ImGuiIO& io = ImGui::GetIO(); (void)io;
-        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;      
 
         // Setup Dear ImGui style
         ImGui::StyleColorsDark();
 
-        
         ImGuiStyle& style = ImGui::GetStyle();
-        style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0, 0, 0, 0); //disabling the BG dimming when opening a modal window
+        style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0, 0, 0, 0); // Disabling the BG dimming when opening a modal window
         style.Colors[ImGuiCol_WindowBg] = ImColor(61, 61, 61);
 
         // Setup Platform/Renderer backends

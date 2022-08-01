@@ -3,7 +3,7 @@
 #include <string>
 #include <optional> 
 
-#include "imgui_internal.h" //for ImRect
+#include "imgui_internal.h" // ImRect
 
 #include "renderables/Widget.hpp"
 #include "renderables/posts/Post.hpp"
@@ -19,20 +19,19 @@ namespace board
     {
     public:
 
-        enum class status { unnamed_file, fromdisk, fromdisk_modified };
-        status current_status = status::unnamed_file;
-
         BoardTab(string unique_ID);
         BoardTab(PostContainer&& container, string path);
         BoardTab(const PostContainer& container, string path);
-
         void Render();
-
-        FilePath path;
-        const char* GetDisplayName() { return path.AtCurrentLevel(); }
 
         PostContainer container;
         
+        enum class status { unnamed_file, fromdisk, fromdisk_modified };
+        status current_status = status::unnamed_file;
+
+        FilePath path;
+        const char* GetDisplayName() const { return path.AtCurrentLevel(); }
+
     private:
 
         struct CurrentFrameInfo
@@ -143,7 +142,7 @@ namespace board
         void ShowDebugWindow();
         void CommandQueueLookup();
      
-        float s_unit; // Short for "screen unit" -> ImGui::GetFontSize() every frame
+        float s_unit; // Short for "screen unit". ImGui::GetFontSize() at the start of every frame
 
         void SetSelectedPost(std::size_t idx);
         void DragSelectedPost();
@@ -157,7 +156,8 @@ namespace board
 
             LuaVector<std::pair<ImRect, ImRect>> content_rects = LuaVector<std::pair<ImRect, ImRect>>(true);
         };
-        LuaVector<PostRenderingInfo> posts_info;
+
+        LuaVector<PostRenderingInfo> posts_info = LuaVector<PostRenderingInfo>(true);
 
         struct LastFrameInfo
         {

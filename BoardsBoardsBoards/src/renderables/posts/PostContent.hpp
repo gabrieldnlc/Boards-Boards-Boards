@@ -81,21 +81,21 @@ namespace board
 			return std::get<ImageInfo>(data);
 		}
 
-		bool operator==(const PostContent& another) const
+		bool operator==(const PostContent& rhs) const
 		{
-			return data == another.data;
+			return data == rhs.data;
 		}
 
-		bool operator==(const std::string& str) const
+		bool operator==(const std::string& rhs) const
 		{
 			if (!IsString()) return false;
-			return AsString() == str;
+			return AsString() == rhs;
 		}
 
-		bool operator==(const ImageInfo& info) const
+		bool operator==(const ImageInfo& rhs) const
 		{
 			if (!IsImageInfo()) return false;
-			return AsImageInfo() == info;
+			return AsImageInfo() == rhs;
 		}
 
 	private:

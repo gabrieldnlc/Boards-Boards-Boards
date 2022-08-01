@@ -10,7 +10,7 @@ namespace board {
 
 	template<typename T>
 	class LuaVector
-		//TODO due to the specialization of vector<bool> on the Standard Library, LuaVector<bool> is currently not possible.
+		//TODO: due to the specialization of vector<bool> on the Standard Library, LuaVector<bool> is currently not possible.
 	{
 	public:
 		LuaVector(T&& element, bool auto_resize = true) : items{ std::move(element) }, auto_resize(auto_resize) {}
@@ -20,12 +20,14 @@ namespace board {
 
 		LuaVector(bool auto_resize = true) : auto_resize(auto_resize) {}
 
-		bool operator==(const LuaVector<T>& other) const
-		{
-			return items == other.items;
-		}
-		using iterator = std::vector<T>::iterator;
 
+		bool operator==(const LuaVector<T>& rhs) const
+		{
+			return items == rhs.items;
+		}
+
+
+		using iterator = std::vector<T>::iterator;
 		iterator IteratorFromIndex(std::size_t pos)
 		{
 			if (pos == size() + 1) return end();
@@ -34,7 +36,6 @@ namespace board {
 			if (pos == 1) return it;
 			return std::next(it, pos - 1);
 		}
-
 		iterator begin() { return items.begin(); }
 		iterator end() { return items.end(); }
 		T& operator[](int idx) { return at(idx); }
@@ -60,6 +61,32 @@ namespace board {
 				}
 			}
 		}
+
+		iterator Insert(iterator pos, T&& value)
+		{
+			return items.insert(pos, std::move(value));
+		}
+		iterator Insert(iterator pos, const T& value)
+		{
+			return items.insert(pos, value);
+		}
+		template<class... Args>
+		iterator Emplace(iterator pos, Args&&... args)
+		{
+			return items.emplace(pos, std::forward<Args>(args)...);
+		}
+		template<class... Args>
+		iterator EmplaceBack(Args&&... args)
+		{
+			return Emplace(std::end(*this), std::forward<Args>(args)...);
+		}
+		iterator Erase(iterator pos)
+		{
+			return items.erase(pos);
+		}
+		
+
+
 		using const_iterator = std::vector<T>::const_iterator;
 		const_iterator begin() const { return items.cbegin(); } 
 		const_iterator end() const { return items.cend(); }		
@@ -91,23 +118,7 @@ namespace board {
 		std::size_t size() const { return items.size(); }
 		bool Empty() const { return items.empty(); }
 		void Clear() { items.clear(); }
-		iterator Insert(iterator pos, T&& value)
-		{
-			return items.insert(pos, std::move(value));
-		}
-		iterator Insert(iterator pos, const T& value)
-		{
-			return items.insert(pos, value);
-		}
-		template<class... Args>
-		iterator Emplace(iterator pos, Args&&... args)
-		{
-			return items.emplace(pos, std::forward<Args>(args)...);
-		}
-		iterator Erase(iterator pos)
-		{
-			return items.erase(pos);
-		}
+		
 		void PushBack(T&& value)
 		{
 			items.push_back(std::move(value));
@@ -116,11 +127,7 @@ namespace board {
 		{
 			items.push_back(value);
 		}
-		template<class... Args>
-		iterator EmplaceBack(Args&&... args)
-		{
-			return Emplace(std::end(*this), std::forward<Args>(args)...);
-		}
+		
 		void PopBack()
 		{
 			items.pop_back();

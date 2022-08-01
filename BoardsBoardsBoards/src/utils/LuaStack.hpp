@@ -28,15 +28,15 @@ namespace utils
 		
 		//--- FILE I/O ---
 		static void        TableToFile(const sol::table& table, const string& path);
-		static void        GlobalToFile(const std::string& global_table, const string& path);
-		static string	   StringFromFile(const std::string& path);
-		static sol::table  TableFromFile(const std::string& path);
+		static void        GlobalToFile(const string& global_table, const string& path);
+		static string	   StringFromFile(const string& path);
+		static sol::table  TableFromFile(const string& path);
 		//--- FILE I/O --- 
 
 		//--- SERIALIZATION
-		static std::string GlobalTableToString(const string& global_table);
-		static std::string TableToString(const sol::table& table);
-		static std::string PrettyStringFromTable(const sol::table& table);
+		static string GlobalTableToString(const string& global_table);
+		static string TableToString(const sol::table& table);
+		static string PrettyStringFromTable(const sol::table& table);
 		static sol::table  DeserializeTableString(const string& serialized_table);
 		//--- SERIALIZATION
 	private:

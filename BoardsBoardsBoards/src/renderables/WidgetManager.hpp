@@ -17,7 +17,8 @@ namespace board
 		void RenderAll();
 		void NewErrorPrompt(const std::string& what);
 		bool hasActiveTab() { return tab_bar.hasActiveTab(); }
-		//TODO documentation that if !hasActiveTab() using the reference will be undefined behavior
+		
+		// Will throw if !hasActiveTab()
 		BoardTab& getActiveTab() { return tab_bar.getActiveTab(); }
 	private:
 		void CommandQueueLookup();

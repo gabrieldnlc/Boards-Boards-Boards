@@ -7,7 +7,7 @@
 
 int main(int, char**)
 {
-	#ifdef BOARD_RELEASE
+	#ifndef BOARD_DEBUG
 	FreeConsole();
 	#endif
 	

@@ -20,9 +20,9 @@ using utils::IsMouseOnCubicBezier;
 
 namespace board
 {
-	BoardTab::BoardTab(string unique_ID) : Widget(unique_ID), path(std::move(unique_ID)), posts_info(true) {}
-	BoardTab::BoardTab(PostContainer&& container, string path) : container(std::move(container)), Widget(path), path(std::move(path)), posts_info(true) {}
-	BoardTab::BoardTab(const PostContainer& container, string path) : container(container), Widget(path), path(std::move(path)), posts_info(true) {}
+	BoardTab::BoardTab(string unique_ID) : Widget(unique_ID), path(std::move(unique_ID)) {}
+	BoardTab::BoardTab(PostContainer&& container, string path) : container(std::move(container)), Widget(path), path(std::move(path)) {}
+	BoardTab::BoardTab(const PostContainer& container, string path) : container(container), Widget(path), path(std::move(path)) {}
 
 	
 	void RenderText(Post& post, std::size_t content_idx, std::pair<ImRect, ImRect>& content_rects, BoardColors& colors, float s_unit)
@@ -533,9 +533,9 @@ namespace board
 
 		draw_list->ChannelsSplit(3);
 		/*
-			Ch 0 -> Reserved for indicating the hovered over connection, if any
-			Ch 1 -> Connections (bezier curves)
-			Ch 2 -> Posts
+			0 = Reserved for indicating the hovered over connection, if any
+			1 = Connections (bezier curves)
+			2 = Posts (rectangles and text)
 		*/
 		draw_list->ChannelsSetCurrent(2);
 

@@ -20,25 +20,32 @@ namespace board
 	class Tags
 	{
 	public:
+
 		using iterator = std::unordered_map<std::string, TagEntryList>::iterator;
+		iterator begin() { return tags.begin(); }
+		iterator end() { return tags.end(); }
+
+
 		using const_iterator = std::unordered_map<std::string, TagEntryList>::const_iterator;
-		
+		const_iterator begin() const { return tags.cbegin(); }
+		const_iterator end() const { return tags.cend(); }
+
+
 		bool HasTag(const std::string& key) const
 		{
 			return tags.contains(key);
 		}
-		
-		iterator begin() { return tags.begin(); }
-		iterator end() { return tags.end(); }
-
-		const_iterator begin() const { return tags.cbegin(); }
-		const_iterator end() const { return tags.cend(); }
 		bool Empty() const { return tags.empty(); }
+
+		// Returns true if key existed and was removed
 		bool RemoveKey(const std::string& key)
 		{
 			return tags.erase(key) == 1;
 		}
 
+		// Returns false if key does not exist
+		// Throws if index > tags[key].size()
+		// Will remove key from tags if after removal tags[key].size() == 0
 		bool RemoveIndexFromKey(const std::string& key, std::size_t index)
 		{
 			if (!tags.contains(key)) return false;
@@ -56,6 +63,8 @@ namespace board
 			return true;
 			
 		}
+
+		// Returns true if tags[key] contained value and value was successfully removed
 		bool RemoveFromKey(const std::string& key, const LuaValue& value)
 		{
 			bool deleted = false;
@@ -79,10 +88,12 @@ namespace board
 			}
 			return deleted;
 		}
+
 		TagEntryList& operator[](const std::string& key)
 		{
 			return tags[key];
 		}
+
 		const TagEntryList& operator[](const std::string& key) const
 		{
 			try
@@ -93,24 +104,26 @@ namespace board
 			{
 				throw std::out_of_range("'" + key + "' is not a valid key nor can it be created on const object");
 			}
-
 		}
 
 		bool HasConnection() const
 		{
-			return (HasTag("connects_to") && !tags.at("connects_to").Empty()); //TODO use strategy design pattern to change what a "connection" means
+			return (HasTag("connects_to") && !tags.at("connects_to").Empty());
 		}
 
-		bool operator== (const Tags& t2) const
+		bool operator== (const Tags& rhs) const
 		{
-			return tags == t2.tags;
+			return tags == rhs.tags;
 		}
 
+		// Returns true if tags contained key and key was successfully deleted
 		bool Erase(const std::string& key)
 		{
 			return (tags.erase(key)) == 1;
 		}
+
 	private:
+
 		std::unordered_map<std::string, TagEntryList> tags;
 	};
 }

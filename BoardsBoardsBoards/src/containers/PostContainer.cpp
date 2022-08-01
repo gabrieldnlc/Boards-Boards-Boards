@@ -128,15 +128,15 @@ namespace board
 		}
 	}
 
-	bool PostContainer::operator== (const PostContainer& c2) const
+	bool PostContainer::operator== (const PostContainer& rhs) const
 	{
-		if (size() != c2.size()) return false;
-		if (board_options != c2.board_options) return false;
-		if (connections != c2.connections) return false;
+		if (size() != rhs.size()) return false;
+		if (board_options != rhs.board_options) return false;
+		if (connections != rhs.connections) return false;
 		for (std::size_t i = 1; i <= size(); i++)
 		{
 			const Post& p1 = posts[i];
-			const Post& p2 = c2[i];
+			const Post& p2 = rhs[i];
 			if (p1 != p2) return false;
 		}
 		return true;

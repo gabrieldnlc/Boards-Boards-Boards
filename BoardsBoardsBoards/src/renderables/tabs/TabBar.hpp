@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-#include <memory>
 
 #include "renderables/Widget.hpp"
 #include "renderables/tabs/BoardTab.hpp"
@@ -20,7 +19,7 @@ namespace board
 		void NewBoardTab();
 		void NewBoardTab(const std::string& path);
 
-		void CheckForRepeatedTabNames(bool first_run = true);
+		void EnforceNoRepeatedTabNames(bool first_run = true);
 
 		std::vector<BoardTab> tabs;
 		using BoardIt = std::vector<BoardTab>::iterator;

@@ -20,13 +20,13 @@ namespace board
 			#endif
 			auto& io = ImGui::GetIO();
 			ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f), 0, ImVec2(0.5f, 0.5f));
-			//TODO not perfectly centered, in that viewport way
+			//TODO not perfectly centered, in a viewport sense
 
 			first_config = false;
 		}
 		ImGui::Begin(ID.data(), &is_open, ErrorPromptFlags);
 		ImGui::Text(what.data());
-		ImVec2 simsize = ImGui::CalcTextSize("OK", NULL, false, 1.f); //TODO is this perfectly centered?
+		ImVec2 simsize = ImGui::CalcTextSize("OK", NULL, false, 1.f);
 		float center = ImGui::GetWindowWidth() * 0.5f;
 		ImGui::SetCursorPosX(center - simsize.x);
 		if (ImGui::Button("OK"))
