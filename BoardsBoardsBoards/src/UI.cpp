@@ -1,7 +1,7 @@
+#include <future>
+
 #include "sol/sol.hpp"
-
 #include "imgui.h"
-
 #include "UI.hpp"
 #include "utils/CommandQueue.hpp"
 #include "utils/LuaStack.hpp"
@@ -24,26 +24,31 @@ namespace board
         {
             if (ImGui::MenuItem("Open"))
             {
-                using namespace board;
-                try
+                const auto open = [this]()
                 {
-                    std::vector<std::string> files = FileDialog::OpenMultiple();
-                    if (!files.empty())
+                    try
                     {
-                        for (const std::string& path : files)
+                        std::vector<std::string> files = FileDialog::OpenMultiple();
+                        if (!files.empty())
                         {
-                            if (!path.empty())
+                            for (const std::string& path : files)
                             {
-                                CommandQueue::addToQueue(CommandQueue::targets::widgetManager, CommandQueue::commands::openFile, path);
+                                if (!path.empty())
+                                {
+                                    CommandQueue::addToQueue(CommandQueue::targets::widgetManager, CommandQueue::commands::openFile, path);
+                                }
                             }
                         }
-                    }
 
-                }
-                catch (const std::exception& e)
-                {
-                    widgets.NewErrorPrompt(e.what());
-                }
+                    }
+                    catch (const std::exception& e)
+                    {
+                        this->widgets.NewErrorPrompt(e.what());
+                    }
+                };
+
+                auto fut = std::async(std::launch::async, open);
+                
             }
             if (NoTab)
             {
