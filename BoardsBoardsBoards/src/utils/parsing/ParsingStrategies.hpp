@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "ParsingHelpers.hpp"
+#include "HelperFunctions.hpp"
 #include "containers/LuaVector.hpp"
 #include "containers/PostContainer.hpp"
 #include "renderables/posts/PostContent.hpp"

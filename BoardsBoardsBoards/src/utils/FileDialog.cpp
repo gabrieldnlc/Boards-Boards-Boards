@@ -6,10 +6,13 @@ namespace board
     using utils::FileOpenError;
     using utils::FileWriteError;
 
+    const string extension = "lua";
+    const string dot_extension = "." + extension;
+
     string FileDialog::Open()
     {
         nfdchar_t* outPath = NULL;
-        nfdresult_t result = NFD_OpenDialog("lua", NULL, &outPath);
+        nfdresult_t result = NFD_OpenDialog(extension.data(), NULL, &outPath);
 
         switch (result)
         {
@@ -25,7 +28,7 @@ namespace board
     vector<string> FileDialog::OpenMultiple()
     {
         nfdpathset_t outPaths;
-        nfdresult_t result = NFD_OpenDialogMultiple("lua", NULL, &outPaths);
+        nfdresult_t result = NFD_OpenDialogMultiple(extension.data(), NULL, &outPaths);
         vector<string> paths;
 
         switch (result)
@@ -47,16 +50,16 @@ namespace board
     string FileDialog::Save()
     {
         nfdchar_t* outPath = NULL;
-        nfdresult_t result = NFD_SaveDialog("lua", NULL, &outPath);
+        nfdresult_t result = NFD_SaveDialog(extension.data(), NULL, &outPath);
 
         switch (result)
         {
         case (NFD_OKAY):
         {
             string ret = outPath;
-            if (!ret.contains(".lua"))
+            if (!ret.contains(dot_extension))
             {
-                ret += ".lua";
+                ret += dot_extension;
             }
             return ret;
         }

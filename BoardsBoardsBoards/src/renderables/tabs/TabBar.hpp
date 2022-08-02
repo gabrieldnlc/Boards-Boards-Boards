@@ -34,9 +34,10 @@ namespace board
 		}
 
 		int active_tab = -1;
-		int change_to = -1;
 
-		std::size_t unnamed_tab_count = 1;
+		int change_to = -1; // Used to signal which tab needs to be opened with ImGuiTabItemFlags_SetSelected
+
+		std::size_t unnamed_tab_count = 1; // Used to name new board tabs only
 
 	};
 }

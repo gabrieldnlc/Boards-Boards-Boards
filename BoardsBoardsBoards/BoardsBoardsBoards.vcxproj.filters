@@ -111,7 +111,7 @@
     <ClInclude Include="src\utils\parsing\BoardParser.hpp">
       <Filter>src\utils\parsing</Filter>
     </ClInclude>
-    <ClInclude Include="src\utils\parsing\ParsingHelpers.hpp">
+    <ClInclude Include="src\utils\parsing\HelperFunctions.hpp">
       <Filter>src\utils\parsing</Filter>
     </ClInclude>
     <ClInclude Include="src\utils\parsing\ParsingStrategies.hpp">

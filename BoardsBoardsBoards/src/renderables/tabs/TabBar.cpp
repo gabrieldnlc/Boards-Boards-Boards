@@ -38,7 +38,7 @@ namespace board
                 recursion = true;
                 for (auto& it : iterators)
                 {
-                    it->path.LevelUp();
+                    it->path.LevelUp(); // test.ext turns into folder/test.ext
                 }
             }
         }
