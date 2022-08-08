@@ -1,6 +1,6 @@
 #include "Application.hpp"
 
-#ifdef BOARD_RELEASE
+#ifndef BOARD_DEBUG
 #include "Windows.h"
 #endif
 
