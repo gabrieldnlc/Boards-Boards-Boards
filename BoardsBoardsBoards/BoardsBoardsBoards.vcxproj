@@ -72,7 +72,8 @@
       <AdditionalLibraryDirectories>extern\Lua\lib;extern\SDL2\lib\x86;extern\nativefiledialog\lib\Debug\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST extern\SDL2\lib\x86\SDL2.dll\ (xcopy /Q /E /Y /I extern\SDL2\lib\x86\SDL2.dll ..\bin\Debug-windows-x86\$(ProjectName)\ &gt; nul) ELSE (xcopy /Q /Y /I extern\SDL2\lib\x86\SDL2.dll ..\bin\Debug-windows-x86\$(ProjectName)\ &gt; nul)
+      <Command>copy /B /Y extern\SDL2\lib\x86\SDL2.dll ..\bin\Debug-windows-x86\$(ProjectName)\
+copy /B /Y extern\SDL2\COPYING.txt ..\bin\Debug-windows-x86\$(ProjectName)\SDL-LICENSE.txt
 xcopy /Q /E /Y /I scripts ..\bin\Debug-windows-x86\$(ProjectName)\scripts</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -98,7 +99,8 @@ xcopy /Q /E /Y /I scripts ..\bin\Debug-windows-x86\$(ProjectName)\scripts</Comma
       <AdditionalLibraryDirectories>extern\Lua\lib;extern\SDL2\lib\x86;extern\nativefiledialog\lib\Release\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST extern\SDL2\lib\x86\SDL2.dll\ (xcopy /Q /E /Y /I extern\SDL2\lib\x86\SDL2.dll ..\bin\Release-windows-x86\$(ProjectName)\ &gt; nul) ELSE (xcopy /Q /Y /I extern\SDL2\lib\x86\SDL2.dll ..\bin\Release-windows-x86\$(ProjectName)\ &gt; nul)
+      <Command>copy /B /Y extern\SDL2\lib\x86\SDL2.dll ..\bin\Release-windows-x86\$(ProjectName)\
+copy /B /Y extern\SDL2\COPYING.txt ..\bin\Release-windows-x86\$(ProjectName)\SDL-LICENSE.txt
 xcopy /Q /E /Y /I scripts ..\bin\Release-windows-x86\$(ProjectName)\scripts</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
