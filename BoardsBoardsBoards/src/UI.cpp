@@ -1,4 +1,4 @@
-#include <future>
+#include <thread>
 
 #include "sol/sol.hpp"
 #include "imgui.h"
@@ -47,7 +47,8 @@ namespace board
                     }
                 };
 
-                auto fut = std::async(std::launch::async, open);
+                std::thread t(open);
+                t.detach();
                 
             }
             if (NoTab)
